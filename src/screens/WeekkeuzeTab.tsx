@@ -196,10 +196,20 @@ export default function WeekkeuzeTab() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <span style={{ fontWeight: 600, fontSize: 15, flex: 1 }}>{recept!.titel}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{recept!.titel}</div>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '2px 7px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                  background: recept!.moeilijkheid === 'doordeweeks' ? 'rgba(123,140,82,0.14)' : 'rgba(196,101,58,0.12)',
+                  color: recept!.moeilijkheid === 'doordeweeks' ? '#7B8C52' : '#C4653A',
+                }}>
+                  {recept!.moeilijkheid === 'doordeweeks' ? 'Doordeweeks' : 'Weekend'}
+                </span>
+              </div>
               <button
                 onClick={() => removeFromWeekkeuze(weekItem.id)}
-                style={{ color: '#C0BAB3', display: 'flex' }}
+                style={{ color: '#C0BAB3', display: 'flex', alignSelf: 'flex-start' }}
               >
                 <X size={18} />
               </button>

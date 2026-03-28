@@ -1,4 +1,4 @@
-import { Recept, Ingredient, Eenheid } from '../types';
+import { Recept, Ingredient, Eenheid, Moeilijkheid } from '../types';
 
 type ReceptData = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
 
@@ -120,6 +120,11 @@ export function splitStappen(tekst: string): string[] {
   if (zinnen.length > 1) return zinnen;
 
   return [trimmed];
+}
+
+/** Bepaal moeilijkheid automatisch op basis van bereidingstijd: ≤40 min = doordeweeks. */
+export function bepaalMoeilijkheid(bereidingstijd: number): Moeilijkheid {
+  return bereidingstijd <= 40 ? 'doordeweeks' : 'weekend';
 }
 
 export function legeIngredient(): Ingredient {

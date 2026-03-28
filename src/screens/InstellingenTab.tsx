@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
+import { bepaalMoeilijkheid } from '../services/ai';
 
 // ── JSON import types ────────────────────────────────────────────
 type ImportRecept = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
@@ -167,10 +168,8 @@ function normaliseerRecept(raw: Record<string, unknown>): ImportRecept {
   // ── Keuken ──
   const keuken = String(getField(raw, 'keuken', 'cuisine', 'kitchen') ?? '');
 
-  // ── Moeilijkheid ──
-  const moeilijkheidRaw = String(getField(raw, 'moeilijkheid', 'difficulty') ?? '');
-  const moeilijkheid: Moeilijkheid = ['doordeweeks', 'weekend'].includes(moeilijkheidRaw)
-    ? moeilijkheidRaw as Moeilijkheid : 'doordeweeks';
+  // ── Moeilijkheid: automatisch op basis van bereidingstijd ──
+  const moeilijkheid: Moeilijkheid = bepaalMoeilijkheid(bereidingstijd);
 
   // ── Bereidingstijd ──
   const bereidingstijd = parseBereidingstijd(

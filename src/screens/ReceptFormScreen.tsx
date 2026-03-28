@@ -4,7 +4,7 @@ import { Recept, Ingredient, Eenheid, ReceptType, Moeilijkheid } from '../types'
 import { useRecepten } from '../context/ReceptenContext';
 import {
   parseReceptFromUrl, parseReceptFromImages, parseIngredienten,
-  splitStappen, compressImage, legeIngredient, leegRecept,
+  splitStappen, compressImage, legeIngredient, leegRecept, bepaalMoeilijkheid,
 } from '../services/ai';
 
 type FormTab = 'handmatig' | 'url' | 'foto';
@@ -73,7 +73,11 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
   };
 
   const applyAiResult = (data: Partial<Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor'>>) => {
-    setForm((f) => ({ ...f, ...data, favoriet: f.favoriet, laatstGemaakt: f.laatstGemaakt }));
+    setForm((f) => ({
+      ...f, ...data,
+      moeilijkheid: bepaalMoeilijkheid(data.bereidingstijd ?? f.bereidingstijd),
+      favoriet: f.favoriet, laatstGemaakt: f.laatstGemaakt,
+    }));
     if (data.ingredienten && data.ingredienten.length > 0) setIngModus('gestructureerd');
     if (data.bereiding && data.bereiding.length > 0) setBerModus('gestructureerd');
     setActiveTab('handmatig');
@@ -361,7 +365,10 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                 <input
                   type="number" min="0"
                   value={form.bereidingstijd || ''}
-                  onChange={(e) => setField('bereidingstijd', Number(e.target.value))}
+                  onChange={(e) => {
+                    const tijd = Number(e.target.value);
+                    setForm((f) => ({ ...f, bereidingstijd: tijd, moeilijkheid: bepaalMoeilijkheid(tijd) }));
+                  }}
                   style={inputStyle}
                 />
               </LabeledInput>

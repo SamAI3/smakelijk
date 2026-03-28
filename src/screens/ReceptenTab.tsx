@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Search, Plus, Star, Clock, ChefHat } from 'lucide-react';
 import { useRecepten } from '../context/ReceptenContext';
-import { Recept, ReceptType } from '../types';
+import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
+
+type MoeilijkheidFilter = 'alles' | Moeilijkheid;
 
 const ACCENT_COLORS = [
   'var(--accent1)', 'var(--accent2)', 'var(--accent3)',
@@ -17,12 +19,14 @@ interface ReceptenTabProps {
 export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabProps) {
   const { recepten } = useRecepten();
   const [typeFilter, setTypeFilter] = useState<ReceptType>('hoofdgerecht');
+  const [moeilijkheidFilter, setMoeilijkheidFilter] = useState<MoeilijkheidFilter>('alles');
   const [zoekterm, setZoekterm] = useState('');
   const [geselecteerdeKeuken, setGeselecteerdeKeuken] = useState<string | null>(null);
   const breedte = useWindowWidth();
   const isTablet = breedte >= TABLET;
 
-  const gefilterd = useMemo(() => {
+  // Base filter (without moeilijkheid) — used for counts and keukens
+  const gefilterdBase = useMemo(() => {
     return recepten.filter((r) => {
       if (r.type !== typeFilter) return false;
       if (geselecteerdeKeuken && r.keuken !== geselecteerdeKeuken) return false;
@@ -35,6 +39,17 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
       return true;
     });
   }, [recepten, typeFilter, zoekterm, geselecteerdeKeuken]);
+
+  const gefilterd = useMemo(() => {
+    if (moeilijkheidFilter === 'alles') return gefilterdBase;
+    return gefilterdBase.filter((r) => r.moeilijkheid === moeilijkheidFilter);
+  }, [gefilterdBase, moeilijkheidFilter]);
+
+  const telPerMoeilijkheid = useMemo(() => ({
+    alles: gefilterdBase.length,
+    doordeweeks: gefilterdBase.filter((r) => r.moeilijkheid === 'doordeweeks').length,
+    weekend: gefilterdBase.filter((r) => r.moeilijkheid === 'weekend').length,
+  }), [gefilterdBase]);
 
   const favorieten = gefilterd.filter((r) => r.favoriet);
   const keukens = useMemo(() => {
@@ -54,18 +69,18 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           Recepten
         </h1>
 
-        {/* Toggle */}
+        {/* Toggle Hoofdgerechten / Overig */}
         <div style={{
           display: 'flex',
           background: 'rgba(45,42,38,0.06)',
           borderRadius: 12,
           padding: 4,
-          marginBottom: 12,
+          marginBottom: 10,
         }}>
           {(['hoofdgerecht', 'overig'] as ReceptType[]).map((t) => (
             <button
               key={t}
-              onClick={() => { setTypeFilter(t); setGeselecteerdeKeuken(null); }}
+              onClick={() => { setTypeFilter(t); setGeselecteerdeKeuken(null); setMoeilijkheidFilter('alles'); }}
               style={{
                 flex: 1,
                 padding: '8px 12px',
@@ -82,6 +97,37 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
               {t === 'hoofdgerecht' ? 'Hoofdgerechten' : 'Overig'}
             </button>
           ))}
+        </div>
+
+        {/* Doordeweeks / Weekend filter */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          {([
+            { key: 'alles', label: 'Alles', count: telPerMoeilijkheid.alles, actief: 'rgba(45,42,38,0.85)', inactief: 'rgba(45,42,38,0.07)', actText: '#FAF6F0', inactText: '#7A7570' },
+            { key: 'doordeweeks', label: 'Doordeweeks', count: telPerMoeilijkheid.doordeweeks, actief: 'var(--accent2)', inactief: 'rgba(123,140,82,0.10)', actText: '#fff', inactText: 'var(--accent2)' },
+            { key: 'weekend', label: 'Weekend', count: telPerMoeilijkheid.weekend, actief: 'var(--accent1)', inactief: 'rgba(196,101,58,0.10)', actText: '#fff', inactText: 'var(--accent1)' },
+          ] as const).map(({ key, label, count, actief, inactief, actText, inactText }) => {
+            const isActief = moeilijkheidFilter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setMoeilijkheidFilter(key)}
+                style={{
+                  flex: 1,
+                  padding: '9px 6px',
+                  borderRadius: 10,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  background: isActief ? actief : inactief,
+                  color: isActief ? actText : inactText,
+                  transition: 'all 0.15s',
+                  lineHeight: 1.2,
+                }}
+              >
+                <div>{label}</div>
+                <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, marginTop: 1 }}>{count}</div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Zoekbalk */}
@@ -265,13 +311,23 @@ function ReceptRij({ recept, onClick }: { recept: Recept; onClick: () => void })
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2, color: 'var(--text)' }}>
+        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, color: 'var(--text)' }}>
           {recept.titel}
         </div>
-        <div style={{ fontSize: 12, color: '#A09A93', display: 'flex', gap: 8 }}>
-          {recept.keuken && <span>{recept.keuken}</span>}
-          {recept.bereidingstijd > 0 && <span>· {recept.bereidingstijd} min</span>}
-          <span>· {recept.porties} pers.</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{
+            display: 'inline-block',
+            padding: '2px 7px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+            background: recept.moeilijkheid === 'doordeweeks' ? 'rgba(123,140,82,0.14)' : 'rgba(196,101,58,0.12)',
+            color: recept.moeilijkheid === 'doordeweeks' ? 'var(--accent2)' : 'var(--accent1)',
+          }}>
+            {recept.moeilijkheid === 'doordeweeks' ? 'Doordeweeks' : 'Weekend'}
+          </span>
+          <div style={{ fontSize: 12, color: '#A09A93', display: 'flex', gap: 6 }}>
+            {recept.keuken && <span>{recept.keuken}</span>}
+            {recept.bereidingstijd > 0 && <span>· {recept.bereidingstijd} min</span>}
+            <span>· {recept.porties} pers.</span>
+          </div>
         </div>
       </div>
       {recept.favoriet && (
