@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start dev server (Vite, localhost:5173)
+npm run dev      # Start Vite dev server (localhost:5173) — AI-functies werken NIET via npm run dev
+netlify dev      # Start Vite + Netlify Functions lokaal (vereist: npm i -g netlify-cli)
 npm run build    # Type-check + production build → dist/
-npm run preview  # Serve the production build locally
+npm run preview  # Serve de production build lokaal
 npx tsc --noEmit # Type-check only
 ```
 
@@ -21,7 +22,7 @@ Een gedeelde receptenapp voor twee personen. Gebruikers slaan recepten op, maken
 - **Database:** Firebase/Firestore
 - **Auth:** Google Sign-In via Firebase Auth
 - **Hosting:** Netlify (auto-deploy via GitHub, `netlify.toml` aanwezig)
-- **AI:** Anthropic API — `claude-sonnet-4-20250514`, `dangerouslyAllowBrowser: true`
+- **AI:** Anthropic API — `claude-sonnet-4-20250514`, via Netlify Function proxy (niet direct vanuit de browser)
 - **Icons:** Lucide React
 - **Boodschappenlijst:** Apple Reminders via Apple Shortcuts URL scheme
 
@@ -119,7 +120,7 @@ Drie sub-tabs:
 2. **URL** — plak URL → `parseReceptFromUrl()` → AI vult formulier in → gebruiker checkt → opslaan
 3. **Foto** — `<input type="file" capture="environment">` → `parseReceptFromImage()` → zelfde flow
 
-AI-functies zitten in `src/services/ai.ts`. Beide retourneren een partieel `Recept`-object of `null`. Na een succesvol AI-resultaat schakelt de tab automatisch terug naar "Handmatig" voor controle.
+`src/services/ai.ts` roept `/.netlify/functions/ai` aan via `fetch` (geen SDK in de browser). De serverless function `netlify/functions/ai.mts` gebruikt `@anthropic-ai/sdk` server-side met `ANTHROPIC_API_KEY`. Beide functies retourneren een partieel `Recept`-object of `null`. Na een succesvol AI-resultaat schakelt de tab automatisch terug naar "Handmatig" voor controle.
 
 ## Weekkeuze-tab
 

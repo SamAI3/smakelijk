@@ -8,7 +8,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          anthropic: ['@anthropic-ai/sdk'],
         },
       },
     },
