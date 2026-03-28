@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useWindowWidth, TABLET } from './hooks/useWindowWidth';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { HouseholdProvider, useHousehold } from './context/HouseholdContext';
 import { ReceptenProvider } from './context/ReceptenContext';
@@ -23,6 +24,8 @@ function AppInner() {
   const { household, loading: householdLoading } = useHousehold();
   const [activeTab, setActiveTab] = useState<Tab>('recepten');
   const [screen, setScreen] = useState<Screen>({ type: 'tabs' });
+  const breedte = useWindowWidth();
+  const isTablet = breedte >= TABLET;
 
   if (authLoading || householdLoading) {
     return (
@@ -82,17 +85,29 @@ function AppInner() {
   // Hoofd tabs
   return (
     <>
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {activeTab === 'recepten' && (
-          <ReceptenTab
-            onOpenRecept={(r) => setScreen({ type: 'detail', recept: r })}
-            onAddRecept={() => setScreen({ type: 'form' })}
-          />
+      <div style={{
+        flex: 1, overflow: 'hidden', display: 'flex',
+        flexDirection: isTablet ? 'row' : 'column',
+      }}>
+        {/* Verticale sidebar op tablet */}
+        {isTablet && (
+          <TabBar activeTab={activeTab} onTabChange={setActiveTab} vertical />
         )}
-        {activeTab === 'weekkeuze' && <WeekkeuzeTab />}
-        {activeTab === 'instellingen' && <InstellingenTab />}
+        <div style={{
+          flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        }}>
+          {activeTab === 'recepten' && (
+            <ReceptenTab
+              onOpenRecept={(r) => setScreen({ type: 'detail', recept: r })}
+              onAddRecept={() => setScreen({ type: 'form' })}
+            />
+          )}
+          {activeTab === 'weekkeuze' && <WeekkeuzeTab />}
+          {activeTab === 'instellingen' && <InstellingenTab />}
+        </div>
       </div>
-      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Bottom tab bar alleen op mobiel */}
+      {!isTablet && <TabBar activeTab={activeTab} onTabChange={setActiveTab} />}
     </>
   );
 }

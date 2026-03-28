@@ -1,10 +1,14 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, Plus, Trash2, Link, Camera, FileText, Loader } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Link, Camera, FileText, Loader, Wand2, RotateCcw } from 'lucide-react';
 import { Recept, Ingredient, Eenheid, ReceptType, Moeilijkheid } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
-import { parseReceptFromUrl, parseReceptFromImage, legeIngredient, leegRecept } from '../services/ai';
+import {
+  parseReceptFromUrl, parseReceptFromImage, parseIngredienten,
+  splitStappen, compressImage, legeIngredient, leegRecept,
+} from '../services/ai';
 
 type FormTab = 'handmatig' | 'url' | 'foto';
+type InvoerModus = 'tekst' | 'gestructureerd';
 
 interface Props {
   recept?: Recept;
@@ -35,6 +39,18 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState('');
 
+  // Ingrediënten invoermodus
+  const heeftBestaandeIngredienten = !!bestaandRecept && bestaandRecept.ingredienten.length > 0;
+  const [ingModus, setIngModus] = useState<InvoerModus>(heeftBestaandeIngredienten ? 'gestructureerd' : 'tekst');
+  const [ingTekst, setIngTekst] = useState('');
+  const [ingLoading, setIngLoading] = useState(false);
+  const [ingError, setIngError] = useState('');
+
+  // Bereiding invoermodus
+  const heeftBestaandeBereiding = !!bestaandRecept && bestaandRecept.bereiding.length > 0;
+  const [berModus, setBerModus] = useState<InvoerModus>(heeftBestaandeBereiding ? 'gestructureerd' : 'tekst');
+  const [berTekst, setBerTekst] = useState('');
+
   const setField = <K extends keyof typeof form>(key: K, value: typeof form[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
   };
@@ -57,6 +73,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
 
   const applyAiResult = (data: Partial<Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor'>>) => {
     setForm((f) => ({ ...f, ...data, favoriet: f.favoriet, laatstGemaakt: f.laatstGemaakt }));
+    if (data.ingredienten && data.ingredienten.length > 0) setIngModus('gestructureerd');
+    if (data.bereiding && data.bereiding.length > 0) setBerModus('gestructureerd');
     setActiveTab('handmatig');
   };
 
@@ -66,11 +84,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
     setAiError('');
     try {
       const result = await parseReceptFromUrl(urlInput.trim());
-      if (result) {
-        applyAiResult({ ...result, bronUrl: urlInput.trim() });
-      } else {
-        setAiError('Kon het recept niet ophalen. Probeer een andere URL of voer het handmatig in.');
-      }
+      if (result) applyAiResult({ ...result, bronUrl: urlInput.trim() });
+      else setAiError('Kon het recept niet ophalen. Probeer een andere URL of voer het handmatig in.');
     } finally {
       setAiLoading(false);
     }
@@ -80,23 +95,39 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
     setAiLoading(true);
     setAiError('');
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64Full = e.target?.result as string;
-        const base64 = base64Full.split(',')[1];
-        const mimeType = file.type || 'image/jpeg';
-        const result = await parseReceptFromImage(base64, mimeType);
-        if (result) {
-          applyAiResult(result);
-        } else {
-          setAiError('Kon het recept niet lezen. Probeer een duidelijkere foto.');
-        }
-        setAiLoading(false);
-      };
-      reader.readAsDataURL(file);
+      const { base64, mimeType } = await compressImage(file);
+      const result = await parseReceptFromImage(base64, mimeType);
+      if (result) applyAiResult(result);
+      else setAiError('Kon het recept niet lezen. Zorg voor een scherpe, goed verlichte foto van het recept.');
     } catch {
       setAiError('Er ging iets mis bij het verwerken van de foto.');
+    } finally {
       setAiLoading(false);
+    }
+  };
+
+  const handleParseIngredienten = async () => {
+    if (!ingTekst.trim()) return;
+    setIngLoading(true);
+    setIngError('');
+    try {
+      const result = await parseIngredienten(ingTekst);
+      if (result && result.length > 0) {
+        setField('ingredienten', result);
+        setIngModus('gestructureerd');
+      } else {
+        setIngError('Kon de ingrediënten niet verwerken. Controleer de invoer.');
+      }
+    } finally {
+      setIngLoading(false);
+    }
+  };
+
+  const handleSplitBereiding = () => {
+    const stappen = splitStappen(berTekst);
+    if (stappen.length > 0) {
+      setField('bereiding', stappen);
+      setBerModus('gestructureerd');
     }
   };
 
@@ -106,33 +137,20 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
     setField('ingredienten', updated);
   };
 
-  const removeIngredient = (i: number) => {
-    setField('ingredienten', form.ingredienten.filter((_, idx) => idx !== i));
-  };
-
-  const addIngredient = () => {
-    setField('ingredienten', [...form.ingredienten, legeIngredient()]);
-  };
+  const removeIngredient = (i: number) => setField('ingredienten', form.ingredienten.filter((_, idx) => idx !== i));
+  const addIngredient = () => setField('ingredienten', [...form.ingredienten, legeIngredient()]);
 
   const updateStap = (i: number, value: string) => {
     const updated = [...form.bereiding];
     updated[i] = value;
     setField('bereiding', updated);
   };
-
-  const removeStap = (i: number) => {
-    setField('bereiding', form.bereiding.filter((_, idx) => idx !== i));
-  };
-
-  const addStap = () => {
-    setField('bereiding', [...form.bereiding, '']);
-  };
+  const removeStap = (i: number) => setField('bereiding', form.bereiding.filter((_, idx) => idx !== i));
+  const addStap = () => setField('bereiding', [...form.bereiding, '']);
 
   const addTag = () => {
     const t = tagInput.trim();
-    if (t && !form.tags.includes(t)) {
-      setField('tags', [...form.tags, t]);
-    }
+    if (t && !form.tags.includes(t)) setField('tags', [...form.tags, t]);
     setTagInput('');
   };
 
@@ -157,8 +175,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             padding: '8px 16px', borderRadius: 10,
             background: form.titel.trim() ? 'var(--accent1)' : 'rgba(45,42,38,0.12)',
             color: form.titel.trim() ? '#fff' : '#A09A93',
-            fontSize: 14, fontWeight: 600,
-            transition: 'all 0.15s',
+            fontSize: 14, fontWeight: 600, transition: 'all 0.15s',
           }}
         >
           {saving ? 'Opslaan…' : 'Opslaan'}
@@ -169,8 +186,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {!bestaandRecept && (
         <div style={{ padding: '12px 20px 0' }}>
           <div style={{
-            display: 'flex',
-            background: 'rgba(45,42,38,0.06)',
+            display: 'flex', background: 'rgba(45,42,38,0.06)',
             borderRadius: 12, padding: 4, gap: 2,
           }}>
             {([
@@ -182,11 +198,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                 key={id}
                 onClick={() => { setActiveTab(id); setAiError(''); }}
                 style={{
-                  flex: 1,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                  padding: '8px 6px',
-                  borderRadius: 9,
-                  fontSize: 13, fontWeight: 500,
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                  padding: '8px 6px', borderRadius: 9, fontSize: 13, fontWeight: 500,
                   background: activeTab === id ? 'var(--card)' : 'transparent',
                   color: activeTab === id ? 'var(--text)' : '#7A7570',
                   boxShadow: activeTab === id ? 'var(--shadow)' : 'none',
@@ -207,25 +220,20 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             Plak de URL van een recept. De AI haalt de ingrediënten en bereiding op.
           </p>
           <input
-            type="url"
-            placeholder="https://..."
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
+            type="url" placeholder="https://..."
+            value={urlInput} onChange={(e) => setUrlInput(e.target.value)}
             style={inputStyle}
           />
           {aiError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{aiError}</p>}
           <button
             onClick={handleUrlParse}
             disabled={!urlInput.trim() || aiLoading}
-            style={{
-              padding: '12px', borderRadius: 12,
-              background: 'var(--accent1)', color: '#fff',
-              fontSize: 14, fontWeight: 600,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              opacity: aiLoading ? 0.7 : 1,
-            }}
+            style={aiButtonStyle(aiLoading)}
           >
-            {aiLoading ? <><Loader size={16} style={{ animation: 'spin 1s linear infinite' }} /> Bezig…</> : 'Recept ophalen'}
+            {aiLoading
+              ? <><Loader size={16} style={spinStyle} /> Bezig…</>
+              : <><Wand2 size={16} /> Recept ophalen</>
+            }
           </button>
         </div>
       )}
@@ -234,18 +242,18 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {activeTab === 'foto' && (
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <p style={{ fontSize: 14, color: '#7A7570' }}>
-            Maak een foto van een recept of kies er een uit je bibliotheek.
+            Maak een foto van een recept (kookboek, tijdschrift, scherm). Zorg voor goede belichting en houd de tekst recht.
           </p>
           {aiError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{aiError}</p>}
           <input
             ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
+            type="file" accept="image/*"
             style={{ display: 'none' }}
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) handleImageCapture(file);
+              // Reset zodat dezelfde foto opnieuw geselecteerd kan worden
+              e.target.value = '';
             }}
           />
           <button
@@ -260,10 +268,16 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             }}
           >
             {aiLoading
-              ? <><Loader size={28} style={{ animation: 'spin 1s linear infinite' }} /><span>Verwerken…</span></>
-              : <><Camera size={28} /><span style={{ fontSize: 14 }}>Foto maken of kiezen</span></>
+              ? <><Loader size={28} style={spinStyle} /><span style={{ fontSize: 14 }}>Verwerken… (dit kan 10-20 seconden duren)</span></>
+              : <><Camera size={28} /><span style={{ fontSize: 14 }}>Foto kiezen of maken</span><span style={{ fontSize: 12, color: '#B0AAA3' }}>Foto wordt gecomprimeerd vóór verzending</span></>
             }
           </button>
+
+          <div style={{ background: 'rgba(212,168,67,0.1)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(212,168,67,0.3)' }}>
+            <p style={{ fontSize: 12, color: '#7A5A00' }}>
+              <strong>Tips voor een goed resultaat:</strong> fotografeer het recept plat en recht, zorg voor voldoende licht, en zorg dat de tekst volledig in beeld is.
+            </p>
+          </div>
         </div>
       )}
 
@@ -273,22 +287,18 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
           {/* Basis */}
           <FormSection title="Basis">
             <input
-              type="text"
-              placeholder="Naam van het recept"
-              value={form.titel}
-              onChange={(e) => setField('titel', e.target.value)}
+              type="text" placeholder="Naam van het recept"
+              value={form.titel} onChange={(e) => setField('titel', e.target.value)}
               style={{ ...inputStyle, fontWeight: 600, fontSize: 16 }}
             />
             <div style={{ display: 'flex', gap: 8 }}>
               {(['hoofdgerecht', 'overig'] as ReceptType[]).map((t) => (
                 <button
-                  key={t}
-                  onClick={() => setField('type', t)}
+                  key={t} onClick={() => setField('type', t)}
                   style={{
                     flex: 1, padding: '8px', borderRadius: 10, fontSize: 13,
                     background: form.type === t ? 'var(--accent1)' : 'rgba(45,42,38,0.06)',
-                    color: form.type === t ? '#fff' : 'var(--text)',
-                    fontWeight: 500,
+                    color: form.type === t ? '#fff' : 'var(--text)', fontWeight: 500,
                   }}
                 >
                   {t === 'hoofdgerecht' ? 'Hoofdgerecht' : 'Overig'}
@@ -298,8 +308,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <LabeledInput label="Bereidingstijd (min)">
                 <input
-                  type="number"
-                  min="0"
+                  type="number" min="0"
                   value={form.bereidingstijd || ''}
                   onChange={(e) => setField('bereidingstijd', Number(e.target.value))}
                   style={inputStyle}
@@ -307,8 +316,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
               </LabeledInput>
               <LabeledInput label="Porties">
                 <input
-                  type="number"
-                  min="1"
+                  type="number" min="1"
                   value={form.porties || ''}
                   onChange={(e) => setField('porties', Number(e.target.value))}
                   style={inputStyle}
@@ -318,8 +326,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <LabeledInput label="Keuken">
                 <select
-                  value={form.keuken}
-                  onChange={(e) => setField('keuken', e.target.value)}
+                  value={form.keuken} onChange={(e) => setField('keuken', e.target.value)}
                   style={{ ...inputStyle, appearance: 'none' }}
                 >
                   <option value="">Kies…</option>
@@ -339,95 +346,197 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             </div>
           </FormSection>
 
-          {/* Ingrediënten */}
+          {/* ── Ingrediënten ── */}
           <FormSection title="Ingrediënten">
-            {form.ingredienten.map((ing, i) => (
-              <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  placeholder="0"
-                  value={ing.hoeveelheid || ''}
-                  onChange={(e) => updateIngredient(i, 'hoeveelheid', e.target.value)}
-                  style={{ ...inputStyle, width: 60, flexShrink: 0, padding: '10px 8px', textAlign: 'center' }}
+            {ingModus === 'tekst' ? (
+              <>
+                <textarea
+                  placeholder={'Plak of typ de ingrediënten, bijv.:\n500 gram gehakt\n2 uien\n1 blik tomaten\n400 ml bouillon'}
+                  value={ingTekst}
+                  onChange={(e) => setIngTekst(e.target.value)}
+                  rows={6}
+                  style={{ ...inputStyle, resize: 'vertical' }}
                 />
-                <select
-                  value={ing.eenheid}
-                  onChange={(e) => updateIngredient(i, 'eenheid', e.target.value)}
-                  style={{ ...inputStyle, width: 70, flexShrink: 0, padding: '10px 6px', appearance: 'none' }}
-                >
-                  {EENHEDEN.map((e) => <option key={e} value={e}>{e}</option>)}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Ingrediënt"
-                  value={ing.naam}
-                  onChange={(e) => updateIngredient(i, 'naam', e.target.value)}
-                  style={{ ...inputStyle, flex: 1 }}
-                />
-                <button onClick={() => removeIngredient(i)} style={{ color: '#C0BAB3', flexShrink: 0 }}>
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-            <button
-              onClick={addIngredient}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 14px', borderRadius: 10,
-                border: '1.5px dashed rgba(45,42,38,0.15)',
-                color: 'var(--accent1)', fontSize: 14, fontWeight: 500,
-                background: 'transparent',
-              }}
-            >
-              <Plus size={16} /> Ingrediënt toevoegen
-            </button>
+                {ingError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{ingError}</p>}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={handleParseIngredienten}
+                    disabled={!ingTekst.trim() || ingLoading}
+                    style={{
+                      ...aiButtonStyle(ingLoading),
+                      flex: 1,
+                      opacity: !ingTekst.trim() ? 0.5 : 1,
+                    }}
+                  >
+                    {ingLoading
+                      ? <><Loader size={15} style={spinStyle} /> Verwerken…</>
+                      : <><Wand2 size={15} /> Verwerk met AI</>
+                    }
+                  </button>
+                  {form.ingredienten.length > 0 && (
+                    <button
+                      onClick={() => setIngModus('gestructureerd')}
+                      style={{
+                        padding: '10px 14px', borderRadius: 10,
+                        background: 'rgba(45,42,38,0.06)', fontSize: 13, color: 'var(--text)',
+                      }}
+                    >
+                      Toon lijst
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {form.ingredienten.map((ing, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <input
+                      type="number" min="0" step="0.1" placeholder="0"
+                      value={ing.hoeveelheid || ''}
+                      onChange={(e) => updateIngredient(i, 'hoeveelheid', e.target.value)}
+                      style={{ ...inputStyle, width: 60, flexShrink: 0, padding: '10px 8px', textAlign: 'center' }}
+                    />
+                    <select
+                      value={ing.eenheid}
+                      onChange={(e) => updateIngredient(i, 'eenheid', e.target.value)}
+                      style={{ ...inputStyle, width: 70, flexShrink: 0, padding: '10px 6px', appearance: 'none' }}
+                    >
+                      {EENHEDEN.map((e) => <option key={e} value={e}>{e}</option>)}
+                    </select>
+                    <input
+                      type="text" placeholder="Ingrediënt"
+                      value={ing.naam}
+                      onChange={(e) => updateIngredient(i, 'naam', e.target.value)}
+                      style={{ ...inputStyle, flex: 1 }}
+                    />
+                    <button onClick={() => removeIngredient(i)} style={{ color: '#C0BAB3', flexShrink: 0 }}>
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={addIngredient}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '10px 14px', borderRadius: 10,
+                      border: '1.5px dashed rgba(45,42,38,0.15)',
+                      color: 'var(--accent1)', fontSize: 13, fontWeight: 500,
+                    }}
+                  >
+                    <Plus size={15} /> Rij toevoegen
+                  </button>
+                  <button
+                    onClick={() => { setIngTekst(''); setIngModus('tekst'); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '10px 14px', borderRadius: 10,
+                      color: '#A09A93', fontSize: 13,
+                      border: '1px solid rgba(45,42,38,0.10)',
+                    }}
+                  >
+                    <RotateCcw size={13} /> Opnieuw invoeren
+                  </button>
+                </div>
+              </>
+            )}
           </FormSection>
 
-          {/* Bereiding */}
+          {/* ── Bereiding ── */}
           <FormSection title="Bereiding">
-            {form.bereiding.map((stap, i) => (
-              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <div style={{
-                  flexShrink: 0, width: 24, height: 24, borderRadius: 6,
-                  background: 'var(--accent1)', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', marginTop: 10,
-                }}>
-                  {i + 1}
-                </div>
+            {berModus === 'tekst' ? (
+              <>
                 <textarea
-                  placeholder={`Stap ${i + 1}…`}
-                  value={stap}
-                  onChange={(e) => updateStap(i, e.target.value)}
-                  rows={2}
-                  style={{ ...inputStyle, flex: 1, resize: 'vertical' }}
+                  placeholder={'Plak of typ de bereiding. De app splitst dit automatisch in stappen.\n\nVoorbeeld:\nVerhit olie in een pan. Fruit de ui glazig. Voeg het gehakt toe en bak bruin.\n\nOf gebruik nummers:\n1. Verhit olie\n2. Fruit de ui\n3. Voeg gehakt toe'}
+                  value={berTekst}
+                  onChange={(e) => setBerTekst(e.target.value)}
+                  rows={8}
+                  style={{ ...inputStyle, resize: 'vertical' }}
                 />
-                <button onClick={() => removeStap(i)} style={{ color: '#C0BAB3', marginTop: 10, flexShrink: 0 }}>
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-            <button
-              onClick={addStap}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 14px', borderRadius: 10,
-                border: '1.5px dashed rgba(45,42,38,0.15)',
-                color: 'var(--accent1)', fontSize: 14, fontWeight: 500,
-                background: 'transparent',
-              }}
-            >
-              <Plus size={16} /> Stap toevoegen
-            </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={handleSplitBereiding}
+                    disabled={!berTekst.trim()}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      padding: '11px 14px', borderRadius: 10,
+                      background: berTekst.trim() ? 'var(--accent5)' : 'rgba(45,42,38,0.08)',
+                      color: berTekst.trim() ? '#fff' : '#A09A93',
+                      fontSize: 13, fontWeight: 600,
+                      opacity: !berTekst.trim() ? 0.5 : 1,
+                    }}
+                  >
+                    <Wand2 size={15} /> Splits in stappen
+                  </button>
+                  {form.bereiding.length > 0 && (
+                    <button
+                      onClick={() => setBerModus('gestructureerd')}
+                      style={{
+                        padding: '10px 14px', borderRadius: 10,
+                        background: 'rgba(45,42,38,0.06)', fontSize: 13, color: 'var(--text)',
+                      }}
+                    >
+                      Toon stappen
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {form.bereiding.map((stap, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                    <div style={{
+                      flexShrink: 0, width: 24, height: 24, borderRadius: 6,
+                      background: 'var(--accent1)', display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', marginTop: 10,
+                    }}>
+                      {i + 1}
+                    </div>
+                    <textarea
+                      placeholder={`Stap ${i + 1}…`}
+                      value={stap}
+                      onChange={(e) => updateStap(i, e.target.value)}
+                      rows={2}
+                      style={{ ...inputStyle, flex: 1, resize: 'vertical' }}
+                    />
+                    <button onClick={() => removeStap(i)} style={{ color: '#C0BAB3', marginTop: 10, flexShrink: 0 }}>
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={addStap}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '10px 14px', borderRadius: 10,
+                      border: '1.5px dashed rgba(45,42,38,0.15)',
+                      color: 'var(--accent1)', fontSize: 13, fontWeight: 500,
+                    }}
+                  >
+                    <Plus size={15} /> Stap toevoegen
+                  </button>
+                  <button
+                    onClick={() => { setBerTekst(''); setBerModus('tekst'); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '10px 14px', borderRadius: 10,
+                      color: '#A09A93', fontSize: 13,
+                      border: '1px solid rgba(45,42,38,0.10)',
+                    }}
+                  >
+                    <RotateCcw size={13} /> Opnieuw invoeren
+                  </button>
+                </div>
+              </>
+            )}
           </FormSection>
 
           {/* Tags */}
           <FormSection title="Tags">
             <div style={{ display: 'flex', gap: 8 }}>
               <input
-                type="text"
-                placeholder="Tag toevoegen…"
+                type="text" placeholder="Tag toevoegen…"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addTag()}
@@ -476,8 +585,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             </LabeledInput>
             <LabeledInput label="Bronlink (URL)">
               <input
-                type="url"
-                placeholder="https://…"
+                type="url" placeholder="https://…"
                 value={form.bronUrl}
                 onChange={(e) => setField('bronUrl', e.target.value)}
                 style={inputStyle}
@@ -497,10 +605,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <h3 style={{
-        fontFamily: 'var(--font-title)', fontSize: 18,
-        color: 'var(--text)', marginBottom: 2,
-      }}>
+      <h3 style={{ fontFamily: 'var(--font-title)', fontSize: 18, color: 'var(--text)', marginBottom: 2 }}>
         {title}
       </h3>
       {children}
@@ -520,12 +625,20 @@ function LabeledInput({ label, children }: { label: string; children: React.Reac
 }
 
 const inputStyle: React.CSSProperties = {
-  padding: '10px 12px',
-  borderRadius: 10,
+  padding: '10px 12px', borderRadius: 10,
   border: '1.5px solid rgba(45,42,38,0.10)',
-  background: 'var(--card)',
-  fontSize: 14,
-  color: 'var(--text)',
-  outline: 'none',
-  width: '100%',
+  background: 'var(--card)', fontSize: 14, color: 'var(--text)',
+  outline: 'none', width: '100%',
 };
+
+const spinStyle: React.CSSProperties = { animation: 'spin 1s linear infinite' };
+
+function aiButtonStyle(loading: boolean): React.CSSProperties {
+  return {
+    padding: '11px 16px', borderRadius: 10,
+    background: 'var(--accent1)', color: '#fff',
+    fontSize: 13, fontWeight: 600,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+    opacity: loading ? 0.7 : 1,
+  };
+}

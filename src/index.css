@@ -41,6 +41,31 @@ html, body {
   position: relative;
 }
 
+/* Tablet / iPad */
+@media (min-width: 768px) {
+  html, body {
+    overflow: hidden;
+  }
+
+  #root {
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  /* Bredere kaarten en padding in tabs */
+  .tab-content {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  #root {
+    max-width: 1200px;
+  }
+}
+
 button {
   cursor: pointer;
   border: none;

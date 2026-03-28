@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Search, Plus, Star, Clock, ChefHat } from 'lucide-react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType } from '../types';
+import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
 
 const ACCENT_COLORS = [
   'var(--accent1)', 'var(--accent2)', 'var(--accent3)',
@@ -18,6 +19,8 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   const [typeFilter, setTypeFilter] = useState<ReceptType>('hoofdgerecht');
   const [zoekterm, setZoekterm] = useState('');
   const [geselecteerdeKeuken, setGeselecteerdeKeuken] = useState<string | null>(null);
+  const breedte = useWindowWidth();
+  const isTablet = breedte >= TABLET;
 
   const gefilterd = useMemo(() => {
     return recepten.filter((r) => {
@@ -48,8 +51,8 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   return (
     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <div style={{ padding: '20px 20px 8px', flexShrink: 0 }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 32, marginBottom: 16 }}>
+      <div style={{ padding: isTablet ? '28px 32px 12px' : '20px 20px 8px', flexShrink: 0 }}>
+        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 40 : 32, marginBottom: 16 }}>
           Recepten
         </h1>
 
@@ -108,12 +111,17 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         </div>
       </div>
 
-      <div style={{ padding: '0 20px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ padding: isTablet ? '0 32px 100px' : '0 20px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* Favorieten */}
         {favorieten.length > 0 && (
           <section>
             <SectionTitle icon={<Star size={15} />} title="Favorieten" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{
+              display: isTablet ? 'grid' : 'flex',
+              gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
+              flexDirection: isTablet ? undefined : 'column',
+              gap: 8,
+            }}>
               {favorieten.map((r) => (
                 <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} />
               ))}
@@ -128,8 +136,8 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
             <div style={{
               display: 'flex', gap: 10,
               overflowX: 'auto', paddingBottom: 4,
-              marginLeft: -20, marginRight: -20,
-              paddingLeft: 20, paddingRight: 20,
+              marginLeft: isTablet ? -32 : -20, marginRight: isTablet ? -32 : -20,
+              paddingLeft: isTablet ? 32 : 20, paddingRight: isTablet ? 32 : 20,
               scrollbarWidth: 'none',
             }}>
               {keukens.map((k, i) => (
@@ -138,13 +146,13 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                   onClick={() => setGeselecteerdeKeuken(geselecteerdeKeuken === k ? null : k)}
                   style={{
                     flexShrink: 0,
-                    padding: '10px 16px',
+                    padding: isTablet ? '12px 20px' : '10px 16px',
                     borderRadius: 12,
                     background: geselecteerdeKeuken === k
                       ? ACCENT_COLORS[i % ACCENT_COLORS.length]
                       : `${ACCENT_COLORS[i % ACCENT_COLORS.length]}22`,
                     color: geselecteerdeKeuken === k ? '#fff' : 'var(--text)',
-                    fontSize: 13,
+                    fontSize: isTablet ? 14 : 13,
                     fontWeight: 500,
                     border: `2px solid ${geselecteerdeKeuken === k ? ACCENT_COLORS[i % ACCENT_COLORS.length] : 'transparent'}`,
                     transition: 'all 0.15s',
@@ -161,7 +169,12 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {recent.length > 0 && (
           <section>
             <SectionTitle icon={<Clock size={15} />} title={geselecteerdeKeuken ?? 'Recent toegevoegd'} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{
+              display: isTablet ? 'grid' : 'flex',
+              gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
+              flexDirection: isTablet ? undefined : 'column',
+              gap: 8,
+            }}>
               {recent.map((r) => (
                 <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} />
               ))}
