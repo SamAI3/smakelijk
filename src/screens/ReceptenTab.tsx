@@ -4,6 +4,8 @@ import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
 import { OlijftakDecoratie, BestekDecoratie } from '../components/Illustrations';
+import { GetKeukenIcon } from '../components/illustrations/KitchenIcons';
+import { TafelHeroIllustration } from '../components/illustrations/HeroIllustration';
 
 type MoeilijkheidFilter = 'alles' | Moeilijkheid;
 
@@ -70,16 +72,21 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{ padding: isTablet ? '28px 32px 12px' : '20px 20px 10px', flexShrink: 0 }}>
-        <h1 style={{
-          fontFamily: 'var(--font-title)',
-          fontSize: isTablet ? 48 : 40,
-          fontWeight: 700,
-          marginBottom: 16,
-          lineHeight: 1.05,
-          color: 'var(--ink)',
-        }}>
-          Recepten
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 0, marginBottom: 4 }}>
+          <h1 style={{
+            fontFamily: 'var(--font-title)',
+            fontSize: isTablet ? 48 : 40,
+            fontWeight: 700,
+            lineHeight: 1.05,
+            color: 'var(--ink)',
+            flex: 1,
+          }}>
+            Recepten
+          </h1>
+          {!isTablet && (
+            <TafelHeroIllustration width={130} style={{ marginBottom: -4, opacity: 0.85, flexShrink: 0 }} />
+          )}
+        </div>
 
         {/* Toggle Hoofdgerechten / Overig */}
         <div style={{
@@ -253,8 +260,10 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                     fontWeight: 600,
                     border: `2px solid ${geselecteerdeKeuken === k ? ACCENT_COLORS[i % ACCENT_COLORS.length] : 'transparent'}`,
                     transition: 'all 0.15s',
+                    display: 'flex', alignItems: 'center', gap: 6,
                   }}
                 >
+                  <GetKeukenIcon keuken={k} style={{ width: 16, height: 16, flexShrink: 0 }} />
                   {k}
                 </button>
               ))}

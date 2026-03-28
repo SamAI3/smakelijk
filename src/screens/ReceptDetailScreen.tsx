@@ -6,6 +6,7 @@ import {
 import { Recept } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
+import { IngredientsDivider } from '../components/illustrations/Decorations';
 
 interface Props {
   recept: Recept;
@@ -256,7 +257,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
                   key={i}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
-                    borderBottom: i < recept.ingredienten.length - 1 ? '1px solid rgba(45,42,38,0.06)' : 'none',
+                    borderBottom: i < recept.ingredienten.length - 1 ? '1px solid rgba(26,26,46,0.06)' : 'none',
                   }}
                 >
                   <span style={{ fontSize: 14, color: 'var(--text)', flex: 1 }}>{ing.naam}</span>
@@ -267,6 +268,13 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
               ))}
             </div>
           </section>
+        )}
+
+        {/* Divider */}
+        {recept.ingredienten.length > 0 && recept.bereiding.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0' }}>
+            <IngredientsDivider width={Math.min(isTablet ? 560 : 320, 560)} />
+          </div>
         )}
 
         {/* Bereiding */}

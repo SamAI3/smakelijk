@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext';
+import { LoginTafelIllustration } from '../components/illustrations/HeroIllustration';
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -11,32 +12,23 @@ export default function LoginScreen() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '40px 24px',
-      gap: 32,
+      gap: 28,
       background: 'var(--bg)',
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div style={{
-          width: 80,
-          height: 80,
-          borderRadius: 24,
-          background: 'var(--accent1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px',
-          fontSize: 36,
-        }}>
-          🍽️
+        <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <LoginTafelIllustration width={240} />
         </div>
         <h1 style={{
           fontFamily: 'var(--font-title)',
-          fontSize: 40,
-          color: 'var(--text)',
+          fontSize: 44,
+          color: 'var(--ink)',
           marginBottom: 8,
+          letterSpacing: '-0.5px',
         }}>
           Smakelijk
         </h1>
-        <p style={{ color: '#7A7570', fontSize: 15 }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
           Jouw recepten, altijd bij de hand.
         </p>
       </div>
@@ -48,7 +40,7 @@ export default function LoginScreen() {
           alignItems: 'center',
           gap: 12,
           background: 'var(--card)',
-          border: '1px solid rgba(45,42,38,0.12)',
+          border: '1px solid rgba(26,26,46,0.12)',
           borderRadius: 12,
           padding: '14px 24px',
           fontSize: 15,

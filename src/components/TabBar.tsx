@@ -1,4 +1,5 @@
 import { Home, CalendarCheck, Settings } from 'lucide-react';
+import { SidebarDecoratie } from './illustrations/Decorations';
 
 type Tab = 'recepten' | 'weekkeuze' | 'instellingen';
 
@@ -68,14 +69,8 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
 
         {/* Bottom decoration */}
         <div style={{ flex: 1 }} />
-        <div style={{
-          paddingLeft: 14,
-          fontSize: 11,
-          color: 'rgba(255,255,255,0.35)',
-          letterSpacing: 0.5,
-          textTransform: 'uppercase',
-        }}>
-          v1.0
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, opacity: 0.7 }}>
+          <SidebarDecoratie width={64} />
         </div>
       </nav>
     );

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Trash2, Minus, Plus, ShoppingCart, X, Check } from 'lucide-react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Ingredient } from '../types';
-import { OlijftakDecoratie } from '../components/Illustrations';
+import { WeekLegeState } from '../components/illustrations/EmptyStates';
 
 interface GecombineerdIngredient {
   naam: string;
@@ -175,8 +175,8 @@ export default function WeekkeuzeTab() {
       <div style={{ padding: '8px 20px 120px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {weekRecepten.length === 0 && (
           <div style={{ textAlign: 'center', padding: '56px 0', color: 'var(--text-muted)' }}>
-            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, opacity: 0.55 }}>
-              <OlijftakDecoratie size={80} color="var(--olive)" />
+            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, opacity: 0.75 }}>
+              <WeekLegeState width={140} />
             </div>
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
               Nog geen recepten gepland.

@@ -5,6 +5,7 @@ import { useHousehold } from '../context/HouseholdContext';
 import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { bepaalMoeilijkheid } from '../services/ai';
+import { CookbookIllustration } from '../components/illustrations/Decorations';
 
 // ── JSON import types ────────────────────────────────────────────
 type ImportRecept = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
@@ -434,9 +435,12 @@ export default function InstellingenTab() {
         <SettingsSection title="Importeren">
           {importStatus === 'idle' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Importeer recepten vanuit een JSON-bestand of plak JSON rechtstreeks.
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+                <CookbookIllustration width={80} style={{ flexShrink: 0, opacity: 0.85 }} />
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  Importeer recepten vanuit een JSON-bestand of plak JSON rechtstreeks.
+                </p>
+              </div>
 
               {/* Bestand uploaden */}
               <input
