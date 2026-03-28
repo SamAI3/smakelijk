@@ -68,6 +68,18 @@ export async function parseReceptFromImage(base64: string, mimeType: string): Pr
   }
 }
 
+export async function parseReceptFromImages(
+  images: { base64: string; mimeType: string }[]
+): Promise<ReceptData | null> {
+  try {
+    const text = await callAiFunction({ type: 'images', images });
+    return text ? parseJSON<ReceptData>(text) : null;
+  } catch (err) {
+    console.error('AI multi-image parse error:', err);
+    return null;
+  }
+}
+
 export async function parseIngredienten(tekst: string): Promise<Ingredient[] | null> {
   try {
     const text = await callAiFunction({ type: 'parse-ingredients', text: tekst });

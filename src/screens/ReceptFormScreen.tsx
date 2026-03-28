@@ -3,7 +3,7 @@ import { ArrowLeft, Plus, Trash2, Link, Camera, FileText, Loader, Wand2, RotateC
 import { Recept, Ingredient, Eenheid, ReceptType, Moeilijkheid } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
 import {
-  parseReceptFromUrl, parseReceptFromImage, parseIngredienten,
+  parseReceptFromUrl, parseReceptFromImages, parseIngredienten,
   splitStappen, compressImage, legeIngredient, leegRecept,
 } from '../services/ai';
 
@@ -37,6 +37,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
   const [aiError, setAiError] = useState('');
   const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fotoFiles, setFotoFiles] = useState<File[]>([]);
   const [tagInput, setTagInput] = useState('');
 
   // Ingrediënten invoermodus
@@ -91,16 +92,17 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
     }
   };
 
-  const handleImageCapture = async (file: File) => {
+  const handleFotosVerwerken = async (files: File[]) => {
+    if (files.length === 0) return;
     setAiLoading(true);
     setAiError('');
     try {
-      const { base64, mimeType } = await compressImage(file);
-      const result = await parseReceptFromImage(base64, mimeType);
+      const compressed = await Promise.all(files.map((f) => compressImage(f)));
+      const result = await parseReceptFromImages(compressed);
       if (result) applyAiResult(result);
-      else setAiError('Kon het recept niet lezen. Zorg voor een scherpe, goed verlichte foto van het recept.');
+      else setAiError('Kon het recept niet lezen. Zorg voor scherpe, goed verlichte foto\'s waarop de tekst goed leesbaar is.');
     } catch {
-      setAiError('Er ging iets mis bij het verwerken van de foto.');
+      setAiError('Er ging iets mis bij het verwerken van de foto\'s.');
     } finally {
       setAiLoading(false);
     }
@@ -242,40 +244,89 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {activeTab === 'foto' && (
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <p style={{ fontSize: 14, color: '#7A7570' }}>
-            Maak een foto van een recept (kookboek, tijdschrift, scherm). Zorg voor goede belichting en houd de tekst recht.
+            Selecteer één of meerdere foto's (bijv. twee pagina's van een kookboek). De AI verwerkt ze samen als één recept.
           </p>
           {aiError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{aiError}</p>}
+
           <input
             ref={fileInputRef}
-            type="file" accept="image/*"
+            type="file" accept="image/*" multiple
             style={{ display: 'none' }}
             onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImageCapture(file);
-              // Reset zodat dezelfde foto opnieuw geselecteerd kan worden
+              const files = Array.from(e.target.files ?? []);
+              if (files.length > 0) setFotoFiles(files);
               e.target.value = '';
             }}
           />
+
+          {/* Foto selectie knop */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={aiLoading}
             style={{
-              padding: '40px 20px', borderRadius: 16,
-              border: '2px dashed rgba(45,42,38,0.15)',
-              background: 'var(--card)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-              color: '#7A7570',
+              padding: '28px 20px', borderRadius: 16,
+              border: `2px dashed ${fotoFiles.length > 0 ? 'var(--accent2)' : 'rgba(45,42,38,0.15)'}`,
+              background: fotoFiles.length > 0 ? 'rgba(123,140,82,0.06)' : 'var(--card)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+              color: '#7A7570', transition: 'all 0.15s',
+            }}
+          >
+            <Camera size={26} color={fotoFiles.length > 0 ? 'var(--accent2)' : '#A09A93'} />
+            <span style={{ fontSize: 14, color: fotoFiles.length > 0 ? 'var(--accent2)' : '#7A7570', fontWeight: fotoFiles.length > 0 ? 600 : 400 }}>
+              {fotoFiles.length > 0
+                ? `${fotoFiles.length} foto${fotoFiles.length > 1 ? "'s" : ''} geselecteerd`
+                : "Foto's kiezen of maken"}
+            </span>
+            <span style={{ fontSize: 12, color: '#B0AAA3' }}>
+              {fotoFiles.length > 0 ? 'Tik om foto\'s te wijzigen' : 'Meerdere selectie mogelijk'}
+            </span>
+          </button>
+
+          {/* Thumbnails */}
+          {fotoFiles.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {fotoFiles.map((file, i) => (
+                <div key={i} style={{ position: 'relative' }}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Foto ${i + 1}`}
+                    style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 10, border: '2px solid var(--accent2)' }}
+                  />
+                  <button
+                    onClick={() => setFotoFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                    style={{
+                      position: 'absolute', top: -6, right: -6,
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: 'var(--accent1)', color: '#fff',
+                      fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Verwerk knop */}
+          <button
+            onClick={() => handleFotosVerwerken(fotoFiles)}
+            disabled={fotoFiles.length === 0 || aiLoading}
+            style={{
+              ...aiButtonStyle(aiLoading),
+              opacity: fotoFiles.length === 0 ? 0.4 : aiLoading ? 0.7 : 1,
             }}
           >
             {aiLoading
-              ? <><Loader size={28} style={spinStyle} /><span style={{ fontSize: 14 }}>Verwerken… (dit kan 10-20 seconden duren)</span></>
-              : <><Camera size={28} /><span style={{ fontSize: 14 }}>Foto kiezen of maken</span><span style={{ fontSize: 12, color: '#B0AAA3' }}>Foto wordt gecomprimeerd vóór verzending</span></>
+              ? <><Loader size={16} style={spinStyle} /> Verwerken… (10–20 sec)</>
+              : <><Wand2 size={16} /> {fotoFiles.length > 1 ? `Verwerk ${fotoFiles.length} foto's` : 'Verwerk foto'}</>
             }
           </button>
 
           <div style={{ background: 'rgba(212,168,67,0.1)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(212,168,67,0.3)' }}>
             <p style={{ fontSize: 12, color: '#7A5A00' }}>
-              <strong>Tips voor een goed resultaat:</strong> fotografeer het recept plat en recht, zorg voor voldoende licht, en zorg dat de tekst volledig in beeld is.
+              <strong>Tips:</strong> fotografeer plat en recht, zorg voor voldoende licht, en zorg dat alle tekst volledig in beeld is. Bij een recept op twee pagina's: maak twee aparte foto's.
             </p>
           </div>
         </div>

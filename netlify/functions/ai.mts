@@ -23,6 +23,7 @@ const INGREDIENTEN_PROMPT = `Verwerk deze ingrediëntenlijst en geef ALLEEN een 
 type RequestBody =
   | { type: 'url'; url: string }
   | { type: 'image'; base64: string; mimeType: string }
+  | { type: 'images'; images: { base64: string; mimeType: string }[] }
   | { type: 'parse-ingredients'; text: string };
 
 export default async (req: Request, _context: Context) => {
@@ -69,6 +70,30 @@ export default async (req: Request, _context: Context) => {
             {
               type: 'text',
               text: 'Extraheer het volledige recept uit deze afbeelding, inclusief titel, alle ingrediënten met exacte hoeveelheden en eenheden, en alle bereidingsstappen. Converteer naar JSON.',
+            },
+          ],
+        }],
+      });
+
+    } else if (body.type === 'images') {
+      response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: RECEPT_SYSTEM_PROMPT,
+        messages: [{
+          role: 'user',
+          content: [
+            ...body.images.map((img) => ({
+              type: 'image' as const,
+              source: {
+                type: 'base64' as const,
+                media_type: img.mimeType as 'image/jpeg' | 'image/png' | 'image/webp',
+                data: img.base64,
+              },
+            })),
+            {
+              type: 'text' as const,
+              text: `Dit zijn ${body.images.length} foto's van hetzelfde recept (bijv. meerdere pagina's van een kookboek). Combineer alle informatie van alle afbeeldingen en extraheer het volledige recept, inclusief alle ingrediënten en alle bereidingsstappen. Converteer naar JSON.`,
             },
           ],
         }],
