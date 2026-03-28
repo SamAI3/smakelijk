@@ -338,7 +338,7 @@ export default function InstellingenTab() {
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       <div style={{ padding: '20px 20px 8px' }}>
         <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 40, fontWeight: 700, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.05 }}>
           Instellingen

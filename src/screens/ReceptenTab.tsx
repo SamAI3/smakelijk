@@ -64,8 +64,10 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
     return [...gefilterd].sort((a, b) => b.aangemaakt.getTime() - a.aangemaakt.getTime());
   }, [gefilterd]);
 
+  const filterKey = `${typeFilter}|${moeilijkheidFilter}|${geselecteerdeKeuken ?? ''}|${zoekterm}`;
+
   return (
-    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <div className="page-enter" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{ padding: isTablet ? '28px 32px 12px' : '20px 20px 10px', flexShrink: 0 }}>
         <h1 style={{
@@ -165,7 +167,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         </div>
 
         {/* Zoekbalk */}
-        <div style={{ position: 'relative' }}>
+        <div className="search-wrapper" style={{ position: 'relative' }}>
           <Search size={16} style={{
             position: 'absolute', left: 12, top: '50%',
             transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none',
@@ -194,14 +196,14 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {favorieten.length > 0 && (
           <section>
             <SectionTitle icon={<Star size={13} />} title="Favorieten" />
-            <div style={{
+            <div key={`fav-${filterKey}`} style={{
               display: isTablet ? 'grid' : 'flex',
               gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
               flexDirection: isTablet ? undefined : 'column',
               gap: 8,
             }}>
-              {favorieten.map((r) => (
-                <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} />
+              {favorieten.map((r, i) => (
+                <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} index={i} />
               ))}
             </div>
           </section>
@@ -267,14 +269,14 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
               icon={geselecteerdeKeuken ? <ChefHat size={13} /> : <Clock size={13} />}
               title={geselecteerdeKeuken ?? 'Alle recepten'}
             />
-            <div style={{
+            <div key={`list-${filterKey}`} style={{
               display: isTablet ? 'grid' : 'flex',
               gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
               flexDirection: isTablet ? undefined : 'column',
               gap: 8,
             }}>
-              {lijstRecepten.map((r) => (
-                <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} />
+              {lijstRecepten.map((r, i) => (
+                <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} index={i} />
               ))}
             </div>
           </section>
@@ -296,6 +298,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
       {/* FAB */}
       <button
         onClick={onAddRecept}
+        className="fab"
         style={{
           position: 'fixed',
           bottom: 'calc(var(--tab-height) + 16px)',
@@ -309,10 +312,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 4px 18px rgba(184,49,47,0.42)',
-          fontSize: 28,
-          fontWeight: 300,
           zIndex: 10,
-          transition: 'transform 0.15s, background 0.15s',
         }}
       >
         <Plus size={26} />
@@ -332,7 +332,7 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string })
   );
 }
 
-function ReceptRij({ recept, onClick }: { recept: Recept; onClick: () => void }) {
+function ReceptRij({ recept, onClick, index = 0 }: { recept: Recept; onClick: () => void; index?: number }) {
   return (
     <button
       onClick={onClick}
@@ -348,6 +348,7 @@ function ReceptRij({ recept, onClick }: { recept: Recept; onClick: () => void })
         width: '100%',
         textAlign: 'left',
         borderLeft: '3px solid var(--cobalt)',
+        animationDelay: `${Math.min(index * 45, 500)}ms`,
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>

@@ -74,7 +74,7 @@ export default function WeekkeuzeTab() {
 
   if (boodschappenModus) {
     return (
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+      <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
         <div style={{
           background: 'var(--cobalt)', padding: '16px 20px',
           display: 'flex', alignItems: 'center', gap: 12,
@@ -157,7 +157,7 @@ export default function WeekkeuzeTab() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       <div style={{ padding: '20px 20px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 40, fontWeight: 700, flex: 1, lineHeight: 1.05, color: 'var(--ink)' }}>
           Weekkeuze
@@ -175,7 +175,7 @@ export default function WeekkeuzeTab() {
       <div style={{ padding: '8px 20px 120px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {weekRecepten.length === 0 && (
           <div style={{ textAlign: 'center', padding: '56px 0', color: 'var(--text-muted)' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, opacity: 0.55 }}>
+            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, opacity: 0.55 }}>
               <OlijftakDecoratie size={80} color="var(--olive)" />
             </div>
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>

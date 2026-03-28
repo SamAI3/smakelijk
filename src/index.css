@@ -5,7 +5,7 @@
 }
 
 :root {
-  /* ── Nieuw kleurenpalet ── */
+  /* ── Kleurenpalet ── */
   --cobalt: #1B3FA0;
   --cobalt-light: #2E5AC7;
   --crimson: #B8312F;
@@ -20,12 +20,12 @@
   --border-color: #E0D9CC;
   --border-light: #EDE8DE;
 
-  /* ── Legacy accent vars (gemapt op nieuw palet) ── */
-  --accent1: #1B3FA0;   /* cobalt  — primaire acties */
-  --accent2: #4A7C59;   /* olive   — secundair, doordeweeks */
-  --accent3: #E8A838;   /* amber   — favoriet ster */
-  --accent4: #D4764E;   /* terracotta — warm accent */
-  --accent5: #1B3FA0;   /* cobalt  — weekkeuze actie */
+  /* ── Legacy accent vars ── */
+  --accent1: #1B3FA0;
+  --accent2: #4A7C59;
+  --accent3: #E8A838;
+  --accent4: #D4764E;
+  --accent5: #1B3FA0;
 
   /* ── Achtergrond & kaarten ── */
   --bg: #F5F0E8;
@@ -35,14 +35,122 @@
   /* ── Layout ── */
   --radius: 16px;
   --shadow: 0 2px 12px rgba(26,26,46,0.08);
-  --shadow-md: 0 4px 16px rgba(26,26,46,0.10);
-  --shadow-lg: 0 6px 24px rgba(26,26,46,0.14);
+  --shadow-md: 0 4px 16px rgba(26,26,46,0.11);
+  --shadow-lg: 0 6px 24px rgba(26,26,46,0.15);
   --tab-height: 72px;
 
   /* ── Typografie ── */
   --font-title: 'Playfair Display', serif;
   --font-body: 'DM Sans', sans-serif;
 }
+
+/* ══════════════════════════════════════
+   KEYFRAMES
+══════════════════════════════════════ */
+
+/* Pagina fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Receptkaart stagger reveal */
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* FAB bounce-in */
+@keyframes fabEnter {
+  0%   { transform: scale(0)    rotate(-90deg); }
+  65%  { transform: scale(1.12) rotate(4deg);   }
+  100% { transform: scale(1)    rotate(0deg);   }
+}
+
+/* Float (lege states / illustraties) */
+@keyframes float {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-7px); }
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ══════════════════════════════════════
+   ANIMATIE-CLASSES
+══════════════════════════════════════ */
+
+/* Pagina-overgang */
+.page-enter {
+  animation: fadeIn 0.28s ease-out;
+}
+
+/* Receptkaarten: stagger reveal + hover lift */
+.recipe-card {
+  animation: cardReveal 0.32s ease-out backwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-left-color 0.15s ease;
+}
+.recipe-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(27,63,160,0.11);
+  border-left-color: var(--cobalt-light) !important;
+}
+.recipe-card:active {
+  transform: translateY(-1px);
+}
+
+/* FAB */
+.fab {
+  animation: fabEnter 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
+}
+.fab:hover {
+  transform: scale(1.09);
+  box-shadow: 0 6px 22px rgba(184,49,47,0.50) !important;
+}
+.fab:hover svg {
+  transform: rotate(45deg);
+}
+.fab svg {
+  transition: transform 0.2s ease;
+}
+.fab:active {
+  transform: scale(0.91);
+}
+
+/* Float illustratie — lege states */
+.float-illustration {
+  animation: float 3.2s ease-in-out infinite;
+}
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 25%,
+    var(--card)         50%,
+    var(--border-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Zoekbalk wrapper — focus ring via box-shadow (geen outline conflict) */
+.search-wrapper input {
+  transition: box-shadow 0.2s ease;
+}
+.search-wrapper:focus-within input {
+  box-shadow: 0 0 0 3px rgba(27,63,160,0.14);
+  outline: none !important;
+}
+
+/* ══════════════════════════════════════
+   GLOBALE STIJLEN
+══════════════════════════════════════ */
 
 html, body {
   height: 100%;
@@ -77,26 +185,13 @@ body::after {
 
 /* Tablet / iPad */
 @media (min-width: 768px) {
-  html, body {
-    overflow: hidden;
-  }
-
-  #root {
-    max-width: 100%;
-    box-shadow: none;
-  }
-
-  .tab-content {
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
-  }
+  html, body { overflow: hidden; }
+  #root { max-width: 100%; box-shadow: none; }
+  .tab-content { max-width: 900px; margin: 0 auto; width: 100%; }
 }
 
 @media (min-width: 1024px) {
-  #root {
-    max-width: 1200px;
-  }
+  #root { max-width: 1200px; }
 }
 
 button {
@@ -110,43 +205,32 @@ input, textarea, select {
   font-family: var(--font-body);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
-/* ── Receptkaart hover ── */
-.recipe-card {
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-left-color 0.12s ease;
-}
-.recipe-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-  border-left-color: var(--cobalt-light) !important;
-}
-
-/* ── Scrollbars ── */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(26,26,46,0.14);
-  border-radius: 2px;
-}
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.14); border-radius: 2px; }
 
 /* Safe area */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .tab-bar {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+  .tab-bar { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* ── Input focus ring ── */
+/* Input focus ring */
 input:focus, textarea:focus, select:focus {
   outline: 2px solid var(--cobalt);
   outline-offset: 1px;
+}
+
+/* ══════════════════════════════════════
+   PREFERS REDUCED MOTION
+══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
