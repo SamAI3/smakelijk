@@ -1,13 +1,30 @@
 import { useState, useMemo } from 'react';
 import {
-  MagnifyingGlass, Plus, Heart, Timer, UsersThree, ForkKnife, ChefHat,
+  MagnifyingGlass, Plus, Heart, Timer, UsersThree, ChefHat,
 } from '@phosphor-icons/react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
 import { BestekDecoratie } from '../components/Illustrations';
-import { GetKeukenIcon } from '../components/illustrations/KitchenIcons';
-import { TafelHeroIllustration } from '../components/illustrations/HeroIllustration';
+
+const KEUKEN_EMOJI: Record<string, string> = {
+  'Italiaans': '🍝',
+  'Frans': '🥐',
+  'Aziatisch': '🥢',
+  'Thais': '🥢',
+  'Chinees': '🥢',
+  'Japans': '🍣',
+  'Mexicaans': '🌮',
+  'Spaans': '🫒',
+  'Nederlands': '🧀',
+  'Indiaas': '🍛',
+  'Arabisch': '🫕',
+  'Grieks': '🫒',
+  'Midden-Oosters': '🫕',
+};
+function getKeukenEmoji(keuken: string): string {
+  return KEUKEN_EMOJI[keuken] ?? '🍽️';
+}
 
 type MoeilijkheidFilter = 'alles' | Moeilijkheid;
 
@@ -94,22 +111,17 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{ padding: isTablet ? '28px 32px 16px' : '20px 20px 12px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 0, marginBottom: 16 }}>
-          <h1 style={{
-            fontFamily: 'var(--font-title)',
-            fontSize: isTablet ? 52 : 44,
-            fontWeight: 900,
-            lineHeight: 1.0,
-            color: 'var(--ink)',
-            flex: 1,
-            letterSpacing: '-0.5px',
-          }}>
-            Recepten
-          </h1>
-          {!isTablet && (
-            <TafelHeroIllustration width={126} style={{ marginBottom: -4, opacity: 0.82, flexShrink: 0 }} />
-          )}
-        </div>
+        <h1 style={{
+          fontFamily: 'var(--font-title)',
+          fontSize: isTablet ? 52 : 44,
+          fontWeight: 900,
+          lineHeight: 1.0,
+          color: 'var(--ink)',
+          letterSpacing: '-0.5px',
+          marginBottom: 16,
+        }}>
+          Recepten
+        </h1>
 
         {/* Toggle Hoofdgerechten / Overig */}
         <div style={{
@@ -217,7 +229,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                   display: 'flex', alignItems: 'center', gap: 5,
                 }}
               >
-                <ForkKnife size={14} weight={geselecteerdeKeuken === null ? 'fill' : 'regular'} />
+                <span style={{ fontSize: 15 }}>🍽️</span>
                 Alle keukens
               </button>
               {keukens.map((k, i) => (
@@ -236,7 +248,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                     display: 'flex', alignItems: 'center', gap: 6,
                   }}
                 >
-                  <GetKeukenIcon keuken={k} style={{ width: 15, height: 15, flexShrink: 0 }} />
+                  <span style={{ fontSize: 15 }}>{getKeukenEmoji(k)}</span>
                   {k}
                 </button>
               ))}
@@ -249,7 +261,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           <section>
             <SectionTitle
               icon={geselecteerdeKeuken
-                ? <GetKeukenIcon keuken={geselecteerdeKeuken} style={{ width: 13, height: 13 }} />
+                ? <span style={{ fontSize: 13 }}>{getKeukenEmoji(geselecteerdeKeuken)}</span>
                 : <Timer size={13} />}
               title={geselecteerdeKeuken ?? 'Alle recepten'}
             />
@@ -342,12 +354,6 @@ function FeaturedReceptCard({ recept, onClick, index = 0 }: { recept: Recept; on
         animationDelay: `${Math.min(index * 45, 500)}ms`,
       }}
     >
-      {/* Keuken watermark */}
-      {recept.keuken && (
-        <div style={{ position: 'absolute', bottom: -10, right: -10, opacity: 0.06, pointerEvents: 'none' }}>
-          <GetKeukenIcon keuken={recept.keuken} style={{ width: 90, height: 90 }} />
-        </div>
-      )}
       {/* Subtiele keuken-tint */}
       <div style={{
         position: 'absolute', inset: 0, borderRadius: 16,
@@ -366,8 +372,8 @@ function FeaturedReceptCard({ recept, onClick, index = 0 }: { recept: Recept; on
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
           {recept.keuken && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--text-muted)' }}>
-              <GetKeukenIcon keuken={recept.keuken} style={{ width: 14, height: 14 }} />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: 14 }}>{getKeukenEmoji(recept.keuken)}</span>
               {recept.keuken}
             </span>
           )}
@@ -402,14 +408,14 @@ function CompactReceptRij({
           animationDelay: `${Math.min(index * 35, 500)}ms`,
         }}
       >
-        {/* Keuken icoon blokje */}
+        {/* Keuken emoji blokje */}
         <div style={{
-          width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-          background: getKeukenTint(recept.keuken) || 'rgba(26,26,46,0.05)',
-          border: '1px solid rgba(26,26,46,0.06)',
+          width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+          background: 'rgba(26,26,46,0.04)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 20,
         }}>
-          <GetKeukenIcon keuken={recept.keuken || ''} style={{ width: 20, height: 20 }} />
+          {getKeukenEmoji(recept.keuken || '')}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{

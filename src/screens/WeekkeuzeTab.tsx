@@ -2,7 +2,15 @@ import { useState, useMemo } from 'react';
 import { Trash, Minus, Plus, ShoppingCart, X, Check, CookingPot } from '@phosphor-icons/react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Ingredient } from '../types';
-import { GetKeukenIcon } from '../components/illustrations/KitchenIcons';
+const KEUKEN_EMOJI: Record<string, string> = {
+  'Italiaans': '🍝', 'Frans': '🥐', 'Aziatisch': '🥢', 'Thais': '🥢',
+  'Chinees': '🥢', 'Japans': '🍣', 'Mexicaans': '🌮', 'Spaans': '🫒',
+  'Nederlands': '🧀', 'Indiaas': '🍛', 'Arabisch': '🫕', 'Grieks': '🫒',
+  'Midden-Oosters': '🫕',
+};
+function getKeukenEmoji(keuken: string): string {
+  return KEUKEN_EMOJI[keuken] ?? '🍽️';
+}
 
 interface GecombineerdIngredient {
   naam: string;
@@ -213,14 +221,14 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-              {/* Keuken icoon */}
+              {/* Keuken emoji */}
               <div style={{
                 width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                background: 'rgba(26,26,46,0.05)',
-                border: '1px solid rgba(26,26,46,0.06)',
+                background: 'rgba(26,26,46,0.04)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 20,
               }}>
-                <GetKeukenIcon keuken={recept!.keuken || ''} style={{ width: 20, height: 20 }} />
+                {getKeukenEmoji(recept!.keuken || '')}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
