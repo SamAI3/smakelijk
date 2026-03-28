@@ -42,10 +42,8 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
     return Array.from(set);
   }, [recepten, typeFilter]);
 
-  const recent = useMemo(() => {
-    return [...gefilterd]
-      .sort((a, b) => b.aangemaakt.getTime() - a.aangemaakt.getTime())
-      .slice(0, 6);
+  const lijstRecepten = useMemo(() => {
+    return [...gefilterd].sort((a, b) => b.aangemaakt.getTime() - a.aangemaakt.getTime());
   }, [gefilterd]);
 
   return (
@@ -140,10 +138,27 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
               paddingLeft: isTablet ? 32 : 20, paddingRight: isTablet ? 32 : 20,
               scrollbarWidth: 'none',
             }}>
+              {/* Alle keukens */}
+              <button
+                onClick={() => setGeselecteerdeKeuken(null)}
+                style={{
+                  flexShrink: 0,
+                  padding: isTablet ? '12px 20px' : '10px 16px',
+                  borderRadius: 12,
+                  background: geselecteerdeKeuken === null ? 'var(--text)' : 'rgba(45,42,38,0.08)',
+                  color: geselecteerdeKeuken === null ? '#FAF6F0' : 'var(--text)',
+                  fontSize: isTablet ? 14 : 13,
+                  fontWeight: 500,
+                  border: '2px solid transparent',
+                  transition: 'all 0.15s',
+                }}
+              >
+                Alle keukens
+              </button>
               {keukens.map((k, i) => (
                 <button
                   key={k}
-                  onClick={() => setGeselecteerdeKeuken(geselecteerdeKeuken === k ? null : k)}
+                  onClick={() => setGeselecteerdeKeuken(k)}
                   style={{
                     flexShrink: 0,
                     padding: isTablet ? '12px 20px' : '10px 16px',
@@ -165,17 +180,20 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           </section>
         )}
 
-        {/* Recent toegevoegd */}
-        {recent.length > 0 && (
+        {/* Receptenlijst */}
+        {lijstRecepten.length > 0 && (
           <section>
-            <SectionTitle icon={<Clock size={15} />} title={geselecteerdeKeuken ?? 'Recent toegevoegd'} />
+            <SectionTitle
+              icon={geselecteerdeKeuken ? <ChefHat size={15} /> : <Clock size={15} />}
+              title={geselecteerdeKeuken ?? 'Alle recepten'}
+            />
             <div style={{
               display: isTablet ? 'grid' : 'flex',
               gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
               flexDirection: isTablet ? undefined : 'column',
               gap: 8,
             }}>
-              {recent.map((r) => (
+              {lijstRecepten.map((r) => (
                 <ReceptRij key={r.id} recept={r} onClick={() => onOpenRecept(r)} />
               ))}
             </div>
