@@ -168,13 +168,13 @@ function normaliseerRecept(raw: Record<string, unknown>): ImportRecept {
   // ── Keuken ──
   const keuken = String(getField(raw, 'keuken', 'cuisine', 'kitchen') ?? '');
 
-  // ── Moeilijkheid: automatisch op basis van bereidingstijd ──
-  const moeilijkheid: Moeilijkheid = bepaalMoeilijkheid(bereidingstijd);
-
   // ── Bereidingstijd ──
   const bereidingstijd = parseBereidingstijd(
     getField(raw, 'bereidingstijd', 'prepTime', 'prep_time', 'preparationTime', 'tijd', 'time', 'totalTime', 'total_time')
   );
+
+  // ── Moeilijkheid: automatisch op basis van bereidingstijd ──
+  const moeilijkheid: Moeilijkheid = bepaalMoeilijkheid(bereidingstijd);
 
   // ── Porties ──
   const porties = parsePorries(
@@ -271,14 +271,18 @@ export default function InstellingenTab() {
 
   const verwerkJson = (tekst: string) => {
     setImportError('');
-    const result = parseImportJson(tekst);
-    if (typeof result === 'string') {
-      setImportError(result);
-      return;
+    try {
+      const result = parseImportJson(tekst);
+      if (typeof result === 'string') {
+        setImportError(result);
+        return;
+      }
+      setImportRecepten(result);
+      setGeselecteerd(new Set(result.map((_, i) => i)));
+      setImportStatus('preview');
+    } catch (err) {
+      setImportError(`Onverwachte fout: ${err instanceof Error ? err.message : String(err)}`);
     }
-    setImportRecepten(result);
-    setGeselecteerd(new Set(result.map((_, i) => i)));
-    setImportStatus('preview');
   };
 
   const handleBestand = (file: File) => {
