@@ -16,79 +16,217 @@ const GELDIGE_EENHEDEN = new Set([
 type EenheidConversie = { eenheid: string; factor?: number };
 
 const EENHEID_MAP: Record<string, EenheidConversie> = {
-  tablespoon: { eenheid: 'el' },
-  tablespoons: { eenheid: 'el' },
-  tbsp: { eenheid: 'el' },
-  teaspoon: { eenheid: 'tl' },
-  teaspoons: { eenheid: 'tl' },
-  tsp: { eenheid: 'tl' },
-  cup: { eenheid: 'ml', factor: 240 },
-  cups: { eenheid: 'ml', factor: 240 },
-  ounce: { eenheid: 'gram', factor: 28 },
-  ounces: { eenheid: 'gram', factor: 28 },
-  oz: { eenheid: 'gram', factor: 28 },
-  pound: { eenheid: 'gram', factor: 454 },
-  pounds: { eenheid: 'gram', factor: 454 },
-  lb: { eenheid: 'gram', factor: 454 },
-  lbs: { eenheid: 'gram', factor: 454 },
-  piece: { eenheid: 'stuks' },
-  pieces: { eenheid: 'stuks' },
-  clove: { eenheid: 'teen' },
-  cloves: { eenheid: 'teen' },
-  sprig: { eenheid: 'takje' },
-  sprigs: { eenheid: 'takje' },
-  leaf: { eenheid: 'blad' },
-  leaves: { eenheid: 'blad' },
+  // EN tablespoon/teaspoon
+  tablespoon: { eenheid: 'el' }, tablespoons: { eenheid: 'el' }, tbsp: { eenheid: 'el' },
+  teaspoon: { eenheid: 'tl' }, teaspoons: { eenheid: 'tl' }, tsp: { eenheid: 'tl' },
+  // cups / volume
+  cup: { eenheid: 'ml', factor: 240 }, cups: { eenheid: 'ml', factor: 240 },
+  glass: { eenheid: 'ml', factor: 200 }, glas: { eenheid: 'ml', factor: 200 },
+  // weight
+  g: { eenheid: 'gram' },
+  ounce: { eenheid: 'gram', factor: 28 }, ounces: { eenheid: 'gram', factor: 28 }, oz: { eenheid: 'gram', factor: 28 },
+  pound: { eenheid: 'gram', factor: 454 }, pounds: { eenheid: 'gram', factor: 454 },
+  lb: { eenheid: 'gram', factor: 454 }, lbs: { eenheid: 'gram', factor: 454 },
+  // liquid
+  l: { eenheid: 'liter' },
+  // pieces / stuks
+  piece: { eenheid: 'stuks' }, pieces: { eenheid: 'stuks' },
+  stuk: { eenheid: 'stuks' }, stukken: { eenheid: 'stuks' },
+  handful: { eenheid: 'stuks' }, handvol: { eenheid: 'stuks' },
+  // herbs / specials
+  clove: { eenheid: 'teen' }, cloves: { eenheid: 'teen' },
+  sprig: { eenheid: 'takje' }, sprigs: { eenheid: 'takje' },
+  leaf: { eenheid: 'blad' }, leaves: { eenheid: 'blad' },
   pinch: { eenheid: 'snuf' },
-  can: { eenheid: 'blik' },
-  pack: { eenheid: 'pak' },
-  package: { eenheid: 'pak' },
+  can: { eenheid: 'blik' }, cans: { eenheid: 'blik' },
+  pack: { eenheid: 'pak' }, package: { eenheid: 'pak' }, packages: { eenheid: 'pak' },
 };
 
 function normaliseerEenheid(
   eenheid: string,
   hoeveelheid: number
 ): { eenheid: string; hoeveelheid: number } {
-  const key = eenheid.trim().toLowerCase();
-  if (GELDIGE_EENHEDEN.has(key)) return { eenheid: key, hoeveelheid };
+  const key = (eenheid ?? '').trim().toLowerCase();
+  if (!key) return { eenheid: 'stuks', hoeveelheid: hoeveelheid || 1 };
+  if (GELDIGE_EENHEDEN.has(key)) return { eenheid: key, hoeveelheid: hoeveelheid || 0 };
   const conversie = EENHEID_MAP[key];
   if (conversie) {
     return {
       eenheid: conversie.eenheid,
-      hoeveelheid: conversie.factor ? Math.round(hoeveelheid * conversie.factor) : hoeveelheid,
+      hoeveelheid: conversie.factor ? Math.round((hoeveelheid || 1) * conversie.factor) : (hoeveelheid || 0),
     };
   }
-  return { eenheid: 'stuks', hoeveelheid };
+  return { eenheid: 'stuks', hoeveelheid: hoeveelheid || 1 };
+}
+
+/** Parse bereidingstijd from text or number. "1 uur en 40 minuten" → 100, "35 min" → 35. */
+function parseBereidingstijd(raw: unknown): number {
+  if (typeof raw === 'number' && !isNaN(raw)) return Math.round(raw);
+  if (!raw) return 30;
+  const s = String(raw).toLowerCase();
+  let minuten = 0;
+  const uurMatch = s.match(/(\d+)\s*(?:uur|hour|hr|u\b)/);
+  const minMatch = s.match(/(\d+)\s*(?:min|minute|minuten|m\b)/);
+  if (uurMatch) minuten += parseInt(uurMatch[1]) * 60;
+  if (minMatch) minuten += parseInt(minMatch[1]);
+  if (minuten > 0) return minuten;
+  // fallback: first number
+  const numMatch = s.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0]) : 30;
+}
+
+/** Parse porties from text or number. "4-6 personen" → 4. */
+function parsePorries(raw: unknown): number {
+  if (typeof raw === 'number' && !isNaN(raw)) return Math.round(raw);
+  if (!raw) return 4;
+  const numMatch = String(raw).match(/\d+/);
+  return numMatch ? parseInt(numMatch[0]) : 4;
+}
+
+/** Get a value from raw using multiple possible field names. */
+function getField(raw: Record<string, unknown>, ...keys: string[]): unknown {
+  for (const key of keys) {
+    if (key in raw && raw[key] !== undefined && raw[key] !== null) return raw[key];
+  }
+  return undefined;
+}
+
+/** Flatten nested ingredient structures (object with category keys → flat array). */
+function flattenIngredienten(raw: unknown): Record<string, unknown>[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    const result: Record<string, unknown>[] = [];
+    for (const item of raw) {
+      if (typeof item === 'object' && item !== null) {
+        const obj = item as Record<string, unknown>;
+        // Is this an ingredient object (has naam/name/item)?
+        const hasNaam = 'naam' in obj || 'name' in obj || 'item' in obj || 'ingredient' in obj;
+        if (hasNaam) {
+          result.push(obj);
+        } else {
+          // Treat as category → flatten its values
+          for (const val of Object.values(obj)) {
+            if (Array.isArray(val)) {
+              result.push(...flattenIngredienten(val));
+            }
+          }
+        }
+      } else if (typeof item === 'string') {
+        result.push({ naam: item });
+      }
+    }
+    return result;
+  }
+  if (typeof raw === 'object' && raw !== null) {
+    // Object of categories
+    const result: Record<string, unknown>[] = [];
+    for (const val of Object.values(raw as Record<string, unknown>)) {
+      result.push(...flattenIngredienten(val));
+    }
+    return result;
+  }
+  return [];
+}
+
+/** Extract step text from string or object ({content, text, description, stap, step}). */
+function extractStap(item: unknown): string {
+  if (typeof item === 'string') return item.trim();
+  if (typeof item === 'object' && item !== null) {
+    const obj = item as Record<string, unknown>;
+    const val = obj.content ?? obj.text ?? obj.description ?? obj.stap ?? obj.step ?? obj.instructie ?? '';
+    return String(val).trim();
+  }
+  return String(item ?? '').trim();
 }
 
 function normaliseerRecept(raw: Record<string, unknown>): ImportRecept {
+  // ── Titel ──
+  const titel = String(getField(raw, 'titel', 'title', 'name', 'naam', 'recept') ?? '');
+
+  // ── Type ──
+  const typeRaw = String(getField(raw, 'type', 'category', 'categorie') ?? '');
+  const type: ReceptType = ['hoofdgerecht', 'overig'].includes(typeRaw) ? typeRaw as ReceptType : 'hoofdgerecht';
+
+  // ── Ingrediënten ──
+  const ingRaw = getField(raw, 'ingredienten', 'ingredients', 'ingrediënten');
+  const ingFlat = flattenIngredienten(ingRaw);
+  const ingredienten = ingFlat.map((ing) => {
+    const naam = String(getField(ing, 'naam', 'name', 'item', 'ingredient', 'ingrediënt') ?? '');
+    const hoeveelheidRaw = getField(ing, 'hoeveelheid', 'amount', 'quantity', 'hoeveelheid');
+    const eenheidRaw = String(getField(ing, 'eenheid', 'unit', 'eenheid') ?? '');
+    const { eenheid, hoeveelheid } = normaliseerEenheid(eenheidRaw, Number(hoeveelheidRaw) || 0);
+    return { hoeveelheid, eenheid, naam };
+  });
+
+  // ── Bereiding ──
+  const berRaw = getField(raw, 'bereiding', 'steps', 'instructions', 'instructies', 'preparation', 'method');
+  const bereiding: string[] = Array.isArray(berRaw)
+    ? (berRaw as unknown[]).map(extractStap).filter(Boolean)
+    : [];
+
+  // ── Keuken ──
+  const keuken = String(getField(raw, 'keuken', 'cuisine', 'kitchen') ?? '');
+
+  // ── Moeilijkheid ──
+  const moeilijkheidRaw = String(getField(raw, 'moeilijkheid', 'difficulty') ?? '');
+  const moeilijkheid: Moeilijkheid = ['doordeweeks', 'weekend'].includes(moeilijkheidRaw)
+    ? moeilijkheidRaw as Moeilijkheid : 'doordeweeks';
+
+  // ── Bereidingstijd ──
+  const bereidingstijd = parseBereidingstijd(
+    getField(raw, 'bereidingstijd', 'prepTime', 'prep_time', 'preparationTime', 'tijd', 'time', 'totalTime', 'total_time')
+  );
+
+  // ── Porties ──
+  const porties = parsePorries(
+    getField(raw, 'porties', 'servings', 'base_servings', 'personen', 'serves', 'portions')
+  );
+
+  // ── Tags ──
+  const tagsRaw = getField(raw, 'tags', 'labels', 'keywords');
+  const tags: string[] = Array.isArray(tagsRaw) ? (tagsRaw as unknown[]).map(String) : [];
+
+  // ── Notities: merge various extra fields ──
+  const notitiesDelen: string[] = [];
+  const basisNotities = String(getField(raw, 'notities', 'notes', 'note', 'description', 'omschrijving') ?? '');
+  if (basisNotities) notitiesDelen.push(basisNotities);
+
+  // bron object → notities
+  const bronObj = getField(raw, 'bron', 'source', 'book', 'boek');
+  if (bronObj && typeof bronObj === 'object' && bronObj !== null) {
+    const b = bronObj as Record<string, unknown>;
+    const delen = [b.boek ?? b.book ?? b.titel ?? b.title, b.auteur ?? b.author, b.pagina !== undefined ? `p. ${b.pagina}` : undefined].filter(Boolean);
+    if (delen.length) notitiesDelen.push(`Bron: ${delen.join(', ')}`);
+  } else if (typeof bronObj === 'string' && bronObj) {
+    notitiesDelen.push(`Bron: ${bronObj}`);
+  }
+
+  // wijn, tip, benodigdheden → notities
+  const wijn = String(getField(raw, 'wijnpairing', 'wine', 'wijn') ?? '');
+  if (wijn) notitiesDelen.push(`Wijn: ${wijn}`);
+  const tip = String(getField(raw, 'tip', 'tips', 'hint') ?? '');
+  if (tip) notitiesDelen.push(`Tip: ${tip}`);
+  const benodigdheden = getField(raw, 'benodigdheden', 'equipment', 'tools');
+  if (benodigdheden) {
+    const lijst = Array.isArray(benodigdheden) ? (benodigdheden as unknown[]).join(', ') : String(benodigdheden);
+    if (lijst) notitiesDelen.push(`Benodigdheden: ${lijst}`);
+  }
+
+  // ── bronUrl ──
+  const bronUrl = String(getField(raw, 'bronUrl', 'url', 'source_url', 'link') ?? '');
+
   return {
-    titel: String(raw.titel ?? ''),
-    type: (['hoofdgerecht', 'overig'].includes(raw.type as string)
-      ? raw.type : 'hoofdgerecht') as ReceptType,
-    ingredienten: Array.isArray(raw.ingredienten)
-      ? (raw.ingredienten as Record<string, unknown>[]).map((ing) => {
-          const { eenheid, hoeveelheid } = normaliseerEenheid(
-            String(ing.eenheid ?? 'stuks'),
-            Number(ing.hoeveelheid ?? 0)
-          );
-          return { hoeveelheid, eenheid, naam: String(ing.naam ?? '') };
-        })
-      : [],
-    bereiding: Array.isArray(raw.bereiding)
-      ? (raw.bereiding as unknown[]).map(String)
-      : [],
-    keuken: String(raw.keuken ?? ''),
-    moeilijkheid: (['doordeweeks', 'weekend'].includes(raw.moeilijkheid as string)
-      ? raw.moeilijkheid : 'doordeweeks') as Moeilijkheid,
-    bereidingstijd: Number(raw.bereidingstijd ?? 30),
-    porties: Number(raw.porties ?? 4),
-    tags: Array.isArray(raw.tags) ? (raw.tags as unknown[]).map(String) : [],
-    notities: String(raw.notities ?? ''),
-    bronUrl: String(raw.bronUrl ?? ''),
+    titel, type, ingredienten, bereiding, keuken, moeilijkheid,
+    bereidingstijd, porties, tags,
+    notities: notitiesDelen.join('\n\n'),
+    bronUrl,
     favoriet: false,
     laatstGemaakt: null,
   };
+}
+
+function heeftTitel(r: Record<string, unknown>): boolean {
+  return ['titel', 'title', 'name', 'naam', 'recept'].some((k) => k in r && Boolean(r[k]));
 }
 
 function parseImportJson(tekst: string): ImportRecept[] | string {
@@ -102,9 +240,9 @@ function parseImportJson(tekst: string): ImportRecept[] | string {
   if (arr.length === 0) return 'Geen recepten gevonden in het bestand.';
   const objects = arr.filter(
     (r): r is Record<string, unknown> =>
-      typeof r === 'object' && r !== null && 'titel' in r
+      typeof r === 'object' && r !== null && heeftTitel(r)
   );
-  if (objects.length === 0) return "Geen geldige recepten gevonden (elk recept heeft een 'titel' nodig).";
+  if (objects.length === 0) return "Geen geldige recepten gevonden (elk recept heeft een 'titel' of 'title' nodig).";
   return objects.map(normaliseerRecept);
 }
 
