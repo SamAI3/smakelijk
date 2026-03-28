@@ -340,7 +340,7 @@ export default function InstellingenTab() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       <div style={{ padding: '20px 20px 8px' }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 32, marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 40, fontWeight: 700, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.05 }}>
           Instellingen
         </h1>
       </div>
@@ -372,7 +372,7 @@ export default function InstellingenTab() {
               <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>
                 {user?.displayName ?? 'Onbekend'}
               </div>
-              <div style={{ fontSize: 13, color: '#7A7570', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.email}
               </div>
             </div>
@@ -383,8 +383,9 @@ export default function InstellingenTab() {
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '13px 16px', borderRadius: 12,
               background: 'var(--card)', boxShadow: 'var(--shadow)',
-              color: 'var(--accent1)', fontSize: 14, fontWeight: 500,
+              color: 'var(--crimson)', fontSize: 14, fontWeight: 600,
               width: '100%', textAlign: 'left',
+              borderLeft: '3px solid var(--crimson)',
             }}
           >
             <LogOut size={18} />
@@ -397,10 +398,10 @@ export default function InstellingenTab() {
           <SettingsSection title="Huishouden">
             <div style={{ background: 'var(--card)', borderRadius: 14, boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
               <SettingsRow label="Naam" value={household.naam} />
-              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 14px', borderBottom: '1px solid rgba(45,42,38,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 14px', borderBottom: '1px solid rgba(26,26,46,0.06)' }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, color: '#A09A93', marginBottom: 2 }}>Uitnodigingscode</div>
-                  <div style={{ fontWeight: 700, fontSize: 22, letterSpacing: 4, color: 'var(--accent1)' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>Uitnodigingscode</div>
+                  <div style={{ fontFamily: 'var(--font-title)', fontWeight: 700, fontSize: 24, letterSpacing: 5, color: 'var(--amber)' }}>
                     {household.code}
                   </div>
                 </div>
@@ -408,22 +409,22 @@ export default function InstellingenTab() {
                   onClick={copyCode}
                   style={{
                     width: 36, height: 36, borderRadius: 10,
-                    background: codeCopied ? 'var(--accent2)' : 'rgba(45,42,38,0.06)',
+                    background: codeCopied ? 'var(--olive)' : 'rgba(26,26,46,0.06)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: codeCopied ? '#fff' : '#7A7570', transition: 'all 0.2s',
+                    color: codeCopied ? '#fff' : 'var(--text-secondary)', transition: 'all 0.2s',
                   }}
                 >
                   {codeCopied ? <Check size={16} /> : <Copy size={16} />}
                 </button>
               </div>
               <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Users size={16} color="#A09A93" />
-                <span style={{ fontSize: 14, color: '#7A7570' }}>
+                <Users size={16} color="var(--text-muted)" />
+                <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
                   {household.leden.length} lid{household.leden.length !== 1 ? 'en' : ''}
                 </span>
               </div>
             </div>
-            <p style={{ fontSize: 12, color: '#A09A93', textAlign: 'center' }}>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>
               Deel de code met huisgenoten om samen recepten te beheren.
             </p>
           </SettingsSection>
@@ -433,7 +434,7 @@ export default function InstellingenTab() {
         <SettingsSection title="Importeren">
           {importStatus === 'idle' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <p style={{ fontSize: 13, color: '#7A7570', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                 Importeer recepten vanuit een JSON-bestand of plak JSON rechtstreeks.
               </p>
 
@@ -464,7 +465,7 @@ export default function InstellingenTab() {
 
               {/* Tekst plakken */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 500, color: '#A09A93', textTransform: 'uppercase', letterSpacing: 0.3 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   Of plak JSON hier
                 </label>
                 <textarea
@@ -474,7 +475,7 @@ export default function InstellingenTab() {
                   rows={6}
                   style={{
                     padding: '10px 12px', borderRadius: 10,
-                    border: '1.5px solid rgba(45,42,38,0.10)',
+                    border: '1.5px solid var(--border-color)',
                     background: 'var(--card)', fontSize: 12,
                     fontFamily: 'monospace', color: 'var(--text)',
                     outline: 'none', resize: 'vertical', width: '100%',
@@ -492,9 +493,10 @@ export default function InstellingenTab() {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   padding: '12px', borderRadius: 12,
-                  background: jsonTekst.trim() ? 'var(--accent2)' : 'rgba(45,42,38,0.08)',
-                  color: jsonTekst.trim() ? '#fff' : '#A09A93',
-                  fontSize: 14, fontWeight: 600,
+                  background: jsonTekst.trim() ? 'var(--cobalt)' : 'rgba(26,26,46,0.08)',
+                  color: jsonTekst.trim() ? '#fff' : 'var(--text-muted)',
+                  fontSize: 14, fontWeight: 700,
+                  boxShadow: jsonTekst.trim() ? '0 3px 12px rgba(27,63,160,0.25)' : 'none',
                 }}
               >
                 <Upload size={16} />
@@ -512,11 +514,11 @@ export default function InstellingenTab() {
                 </span>
                 <button
                   onClick={toggleAlles}
-                  style={{ fontSize: 12, color: 'var(--accent2)', fontWeight: 500 }}
+                  style={{ fontSize: 12, color: 'var(--cobalt)', fontWeight: 600 }}
                 >
                   {geselecteerd.size === importRecepten.length ? 'Deselecteer alles' : 'Selecteer alles'}
                 </button>
-                <button onClick={resetImport} style={{ color: '#A09A93', display: 'flex' }}>
+                <button onClick={resetImport} style={{ color: 'var(--text-muted)', display: 'flex' }}>
                   <X size={18} />
                 </button>
               </div>
@@ -530,15 +532,15 @@ export default function InstellingenTab() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '11px 14px', width: '100%', textAlign: 'left',
-                      borderBottom: i < importRecepten.length - 1 ? '1px solid rgba(45,42,38,0.06)' : 'none',
-                      background: geselecteerd.has(i) ? 'rgba(123,140,82,0.05)' : 'transparent',
+                      borderBottom: i < importRecepten.length - 1 ? '1px solid rgba(26,26,46,0.06)' : 'none',
+                      background: geselecteerd.has(i) ? 'rgba(27,63,160,0.05)' : 'transparent',
                       transition: 'background 0.1s',
                     }}
                   >
                     <div style={{
                       width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                      border: geselecteerd.has(i) ? 'none' : '2px solid rgba(45,42,38,0.20)',
-                      background: geselecteerd.has(i) ? 'var(--accent2)' : 'transparent',
+                      border: geselecteerd.has(i) ? 'none' : '2px solid rgba(26,26,46,0.18)',
+                      background: geselecteerd.has(i) ? 'var(--cobalt)' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.1s',
                     }}>
@@ -548,7 +550,7 @@ export default function InstellingenTab() {
                       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
                         {r.titel || '(naamloos)'}
                       </div>
-                      <div style={{ fontSize: 12, color: '#A09A93' }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                         {r.ingredienten.length} ingrediënt{r.ingredienten.length !== 1 ? 'en' : ''}
                         {r.keuken ? ` · ${r.keuken}` : ''}
                         {r.bereidingstijd > 0 ? ` · ${r.bereidingstijd} min` : ''}
@@ -564,9 +566,10 @@ export default function InstellingenTab() {
                 disabled={geselecteerd.size === 0}
                 style={{
                   padding: '13px', borderRadius: 12,
-                  background: geselecteerd.size > 0 ? 'var(--accent2)' : 'rgba(45,42,38,0.08)',
-                  color: geselecteerd.size > 0 ? '#fff' : '#A09A93',
-                  fontSize: 15, fontWeight: 600,
+                  background: geselecteerd.size > 0 ? 'var(--cobalt)' : 'rgba(26,26,46,0.08)',
+                  color: geselecteerd.size > 0 ? '#fff' : 'var(--text-muted)',
+                  fontSize: 15, fontWeight: 700,
+                  boxShadow: geselecteerd.size > 0 ? '0 3px 12px rgba(27,63,160,0.25)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
@@ -583,10 +586,10 @@ export default function InstellingenTab() {
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: 'var(--accent2)', margin: '0 auto 12px',
+                background: 'var(--cobalt)', margin: '0 auto 12px',
                 animation: 'pulse 1.2s ease-in-out infinite',
               }} />
-              <p style={{ fontSize: 14, color: '#7A7570' }}>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
                 Recepten importeren…
               </p>
               <style>{`
@@ -605,7 +608,7 @@ export default function InstellingenTab() {
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
             }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 14, background: 'var(--accent2)',
+                width: 48, height: 48, borderRadius: 14, background: 'var(--olive)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Check size={26} color="#fff" strokeWidth={2.5} />
@@ -614,7 +617,7 @@ export default function InstellingenTab() {
                 <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>
                   {importSucces} recept{importSucces !== 1 ? 'en' : ''} geïmporteerd
                 </p>
-                <p style={{ fontSize: 13, color: '#7A7570' }}>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
                   De recepten zijn zichtbaar in de Recepten-tab.
                 </p>
               </div>
@@ -622,7 +625,7 @@ export default function InstellingenTab() {
                 onClick={resetImport}
                 style={{
                   padding: '10px 20px', borderRadius: 10,
-                  background: 'rgba(45,42,38,0.06)',
+                  background: 'rgba(26,26,46,0.06)',
                   fontSize: 13, color: 'var(--text)',
                 }}
               >
@@ -647,7 +650,7 @@ export default function InstellingenTab() {
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <h3 style={{ fontSize: 12, fontWeight: 600, color: '#A09A93', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+      <h3 style={{ fontSize: 11, fontWeight: 700, color: 'var(--cobalt)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
         {title}
       </h3>
       {children}
@@ -659,9 +662,9 @@ function SettingsRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '12px 14px', borderBottom: '1px solid rgba(45,42,38,0.06)',
+      padding: '12px 14px', borderBottom: '1px solid rgba(26,26,46,0.06)',
     }}>
-      <span style={{ fontSize: 14, color: '#7A7570' }}>{label}</span>
+      <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{label}</span>
       <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{value}</span>
     </div>
   );

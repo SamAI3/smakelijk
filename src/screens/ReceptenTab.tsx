@@ -3,12 +3,16 @@ import { Search, Plus, Star, Clock, ChefHat } from 'lucide-react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
+import { OlijftakDecoratie, BestekDecoratie } from '../components/Illustrations';
 
 type MoeilijkheidFilter = 'alles' | Moeilijkheid;
 
 const ACCENT_COLORS = [
-  'var(--accent1)', 'var(--accent2)', 'var(--accent3)',
-  'var(--accent4)', 'var(--accent5)',
+  'var(--cobalt)', 'var(--crimson)', 'var(--olive)', 'var(--amber)', 'var(--accent4)',
+];
+const ACCENT_BG = [
+  'rgba(27,63,160,0.10)', 'rgba(184,49,47,0.10)', 'rgba(74,124,89,0.10)',
+  'rgba(232,168,56,0.14)', 'rgba(212,118,78,0.12)',
 ];
 
 interface ReceptenTabProps {
@@ -25,7 +29,6 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   const breedte = useWindowWidth();
   const isTablet = breedte >= TABLET;
 
-  // Base filter (without moeilijkheid) — used for counts and keukens
   const gefilterdBase = useMemo(() => {
     return recepten.filter((r) => {
       if (r.type !== typeFilter) return false;
@@ -64,15 +67,22 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   return (
     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <div style={{ padding: isTablet ? '28px 32px 12px' : '20px 20px 8px', flexShrink: 0 }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 40 : 32, marginBottom: 16 }}>
+      <div style={{ padding: isTablet ? '28px 32px 12px' : '20px 20px 10px', flexShrink: 0 }}>
+        <h1 style={{
+          fontFamily: 'var(--font-title)',
+          fontSize: isTablet ? 48 : 40,
+          fontWeight: 700,
+          marginBottom: 16,
+          lineHeight: 1.05,
+          color: 'var(--ink)',
+        }}>
           Recepten
         </h1>
 
         {/* Toggle Hoofdgerechten / Overig */}
         <div style={{
           display: 'flex',
-          background: 'rgba(45,42,38,0.06)',
+          background: 'rgba(26,26,46,0.06)',
           borderRadius: 12,
           padding: 4,
           marginBottom: 10,
@@ -86,10 +96,10 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                 padding: '8px 12px',
                 borderRadius: 9,
                 fontSize: 14,
-                fontWeight: 500,
-                background: typeFilter === t ? 'var(--card)' : 'transparent',
-                color: typeFilter === t ? 'var(--text)' : '#7A7570',
-                boxShadow: typeFilter === t ? 'var(--shadow)' : 'none',
+                fontWeight: 600,
+                background: typeFilter === t ? 'var(--cobalt)' : 'transparent',
+                color: typeFilter === t ? '#ffffff' : 'var(--text-secondary)',
+                boxShadow: typeFilter === t ? '0 2px 8px rgba(27,63,160,0.25)' : 'none',
                 transition: 'all 0.15s',
                 textTransform: 'capitalize',
               }}
@@ -99,13 +109,37 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           ))}
         </div>
 
-        {/* Doordeweeks / Weekend filter */}
+        {/* Doordeweeks / Weekend / Alles chips */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
           {([
-            { key: 'alles', label: 'Alles', count: telPerMoeilijkheid.alles, actief: 'rgba(45,42,38,0.85)', inactief: 'rgba(45,42,38,0.07)', actText: '#FAF6F0', inactText: '#7A7570' },
-            { key: 'doordeweeks', label: 'Doordeweeks', count: telPerMoeilijkheid.doordeweeks, actief: 'var(--accent2)', inactief: 'rgba(123,140,82,0.10)', actText: '#fff', inactText: 'var(--accent2)' },
-            { key: 'weekend', label: 'Weekend', count: telPerMoeilijkheid.weekend, actief: 'var(--accent1)', inactief: 'rgba(196,101,58,0.10)', actText: '#fff', inactText: 'var(--accent1)' },
-          ] as const).map(({ key, label, count, actief, inactief, actText, inactText }) => {
+            {
+              key: 'alles' as const,
+              label: 'Alles',
+              count: telPerMoeilijkheid.alles,
+              activeBg: 'var(--ink)',
+              activeTekst: '#FFFDF7',
+              inactiveBg: 'rgba(26,26,46,0.07)',
+              inactiveTekst: 'var(--text-secondary)',
+            },
+            {
+              key: 'doordeweeks' as const,
+              label: 'Doordeweeks',
+              count: telPerMoeilijkheid.doordeweeks,
+              activeBg: 'var(--olive)',
+              activeTekst: '#ffffff',
+              inactiveBg: 'rgba(74,124,89,0.10)',
+              inactiveTekst: 'var(--olive)',
+            },
+            {
+              key: 'weekend' as const,
+              label: 'Weekend',
+              count: telPerMoeilijkheid.weekend,
+              activeBg: 'var(--crimson)',
+              activeTekst: '#ffffff',
+              inactiveBg: 'rgba(184,49,47,0.10)',
+              inactiveTekst: 'var(--crimson)',
+            },
+          ]).map(({ key, label, count, activeBg, activeTekst, inactiveBg, inactiveTekst }) => {
             const isActief = moeilijkheidFilter === key;
             return (
               <button
@@ -117,8 +151,8 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                   borderRadius: 10,
                   fontSize: 13,
                   fontWeight: 600,
-                  background: isActief ? actief : inactief,
-                  color: isActief ? actText : inactText,
+                  background: isActief ? activeBg : inactiveBg,
+                  color: isActief ? activeTekst : inactiveTekst,
                   transition: 'all 0.15s',
                   lineHeight: 1.2,
                 }}
@@ -134,7 +168,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         <div style={{ position: 'relative' }}>
           <Search size={16} style={{
             position: 'absolute', left: 12, top: '50%',
-            transform: 'translateY(-50%)', color: '#A09A93', pointerEvents: 'none',
+            transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none',
           }} />
           <input
             type="text"
@@ -145,7 +179,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
               width: '100%',
               padding: '10px 12px 10px 36px',
               borderRadius: 12,
-              border: '1.5px solid rgba(45,42,38,0.10)',
+              border: '1.5px solid var(--border-color)',
               background: 'var(--card)',
               fontSize: 14,
               color: 'var(--text)',
@@ -159,7 +193,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {/* Favorieten */}
         {favorieten.length > 0 && (
           <section>
-            <SectionTitle icon={<Star size={15} />} title="Favorieten" />
+            <SectionTitle icon={<Star size={13} />} title="Favorieten" />
             <div style={{
               display: isTablet ? 'grid' : 'flex',
               gridTemplateColumns: isTablet ? 'repeat(auto-fill, minmax(280px, 1fr))' : undefined,
@@ -176,27 +210,27 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {/* Keukentegels */}
         {keukens.length > 0 && (
           <section>
-            <SectionTitle icon={<ChefHat size={15} />} title="Keuken" />
+            <SectionTitle icon={<ChefHat size={13} />} title="Keuken" />
             <div style={{
-              display: 'flex', gap: 10,
+              display: 'flex', gap: 8,
               overflowX: 'auto', paddingBottom: 4,
               marginLeft: isTablet ? -32 : -20, marginRight: isTablet ? -32 : -20,
               paddingLeft: isTablet ? 32 : 20, paddingRight: isTablet ? 32 : 20,
               scrollbarWidth: 'none',
             }}>
-              {/* Alle keukens */}
               <button
                 onClick={() => setGeselecteerdeKeuken(null)}
                 style={{
                   flexShrink: 0,
-                  padding: isTablet ? '12px 20px' : '10px 16px',
-                  borderRadius: 12,
-                  background: geselecteerdeKeuken === null ? 'var(--text)' : 'rgba(45,42,38,0.08)',
-                  color: geselecteerdeKeuken === null ? '#FAF6F0' : 'var(--text)',
+                  padding: isTablet ? '10px 18px' : '8px 14px',
+                  borderRadius: 10,
+                  background: geselecteerdeKeuken === null ? 'var(--cobalt)' : 'rgba(26,26,46,0.07)',
+                  color: geselecteerdeKeuken === null ? '#ffffff' : 'var(--text-secondary)',
                   fontSize: isTablet ? 14 : 13,
-                  fontWeight: 500,
+                  fontWeight: 600,
                   border: '2px solid transparent',
                   transition: 'all 0.15s',
+                  boxShadow: geselecteerdeKeuken === null ? '0 2px 8px rgba(27,63,160,0.22)' : 'none',
                 }}
               >
                 Alle keukens
@@ -207,14 +241,14 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                   onClick={() => setGeselecteerdeKeuken(k)}
                   style={{
                     flexShrink: 0,
-                    padding: isTablet ? '12px 20px' : '10px 16px',
-                    borderRadius: 12,
+                    padding: isTablet ? '10px 18px' : '8px 14px',
+                    borderRadius: 10,
                     background: geselecteerdeKeuken === k
                       ? ACCENT_COLORS[i % ACCENT_COLORS.length]
-                      : `${ACCENT_COLORS[i % ACCENT_COLORS.length]}22`,
-                    color: geselecteerdeKeuken === k ? '#fff' : 'var(--text)',
+                      : ACCENT_BG[i % ACCENT_BG.length],
+                    color: geselecteerdeKeuken === k ? '#ffffff' : 'var(--text)',
                     fontSize: isTablet ? 14 : 13,
-                    fontWeight: 500,
+                    fontWeight: 600,
                     border: `2px solid ${geselecteerdeKeuken === k ? ACCENT_COLORS[i % ACCENT_COLORS.length] : 'transparent'}`,
                     transition: 'all 0.15s',
                   }}
@@ -230,7 +264,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {lijstRecepten.length > 0 && (
           <section>
             <SectionTitle
-              icon={geselecteerdeKeuken ? <ChefHat size={15} /> : <Clock size={15} />}
+              icon={geselecteerdeKeuken ? <ChefHat size={13} /> : <Clock size={13} />}
               title={geselecteerdeKeuken ?? 'Alle recepten'}
             />
             <div style={{
@@ -246,10 +280,15 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           </section>
         )}
 
+        {/* Lege state */}
         {gefilterd.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#A09A93' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🍳</div>
-            <p style={{ fontSize: 15 }}>Nog geen recepten. Voeg er een toe!</p>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16, opacity: 0.5 }}>
+              <BestekDecoratie size={40} color="var(--cobalt)" />
+            </div>
+            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)' }}>
+              Nog geen recepten. Voeg er een toe!
+            </p>
           </div>
         )}
       </div>
@@ -264,16 +303,16 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           width: 56,
           height: 56,
           borderRadius: 18,
-          background: 'var(--accent1)',
+          background: 'var(--crimson)',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 16px rgba(196,101,58,0.4)',
+          boxShadow: '0 4px 18px rgba(184,49,47,0.42)',
           fontSize: 28,
           fontWeight: 300,
           zIndex: 10,
-          transition: 'transform 0.15s',
+          transition: 'transform 0.15s, background 0.15s',
         }}
       >
         <Plus size={26} />
@@ -284,9 +323,9 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
 
 function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, color: '#7A7570' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10, color: 'var(--cobalt)' }}>
       {icon}
-      <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>
         {title}
       </span>
     </div>
@@ -297,33 +336,27 @@ function ReceptRij({ recept, onClick }: { recept: Recept; onClick: () => void })
   return (
     <button
       onClick={onClick}
+      className="recipe-card"
       style={{
         display: 'flex',
         alignItems: 'center',
         gap: 12,
         background: 'var(--card)',
-        borderRadius: 14,
+        borderRadius: 12,
         padding: '12px 14px',
         boxShadow: 'var(--shadow)',
         width: '100%',
         textAlign: 'left',
-        transition: 'transform 0.1s',
+        borderLeft: '3px solid var(--cobalt)',
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, color: 'var(--text)' }}>
+        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 5, color: 'var(--ink)' }}>
           {recept.titel}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-          <span style={{
-            display: 'inline-block',
-            padding: '2px 7px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-            background: recept.moeilijkheid === 'doordeweeks' ? 'rgba(123,140,82,0.14)' : 'rgba(196,101,58,0.12)',
-            color: recept.moeilijkheid === 'doordeweeks' ? 'var(--accent2)' : 'var(--accent1)',
-          }}>
-            {recept.moeilijkheid === 'doordeweeks' ? 'Doordeweeks' : 'Weekend'}
-          </span>
-          <div style={{ fontSize: 12, color: '#A09A93', display: 'flex', gap: 6 }}>
+          <MoeilijkheidBadge moeilijkheid={recept.moeilijkheid} />
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 5 }}>
             {recept.keuken && <span>{recept.keuken}</span>}
             {recept.bereidingstijd > 0 && <span>· {recept.bereidingstijd} min</span>}
             <span>· {recept.porties} pers.</span>
@@ -334,5 +367,21 @@ function ReceptRij({ recept, onClick }: { recept: Recept; onClick: () => void })
         <Star size={14} fill="var(--accent3)" color="var(--accent3)" style={{ flexShrink: 0 }} />
       )}
     </button>
+  );
+}
+
+function MoeilijkheidBadge({ moeilijkheid }: { moeilijkheid: 'doordeweeks' | 'weekend' }) {
+  const isDdw = moeilijkheid === 'doordeweeks';
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '2px 7px', borderRadius: 5, fontSize: 10, fontWeight: 700,
+      letterSpacing: 0.3,
+      textTransform: 'uppercase',
+      background: isDdw ? 'rgba(74,124,89,0.14)' : 'rgba(184,49,47,0.12)',
+      color: isDdw ? 'var(--olive)' : 'var(--crimson)',
+    }}>
+      {isDdw ? 'Doordeweeks' : 'Weekend'}
+    </span>
   );
 }
