@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Trash2, Minus, Plus, ShoppingCart, X, Check } from 'lucide-react';
+import { Trash, Minus, Plus, ShoppingCart, X, Check, CookingPot } from '@phosphor-icons/react';
 import { useRecepten } from '../context/ReceptenContext';
 import { Ingredient } from '../types';
-import { WeekLegeState } from '../components/illustrations/EmptyStates';
+import { GetKeukenIcon } from '../components/illustrations/KitchenIcons';
 
 interface GecombineerdIngredient {
   naam: string;
@@ -11,7 +11,11 @@ interface GecombineerdIngredient {
   afgevinkt: boolean;
 }
 
-export default function WeekkeuzeTab() {
+interface WeekkeuzeTabProps {
+  onGaNaarRecepten?: () => void;
+}
+
+export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
   const { weekkeuze, recepten, updateWeekkeuze, removeFromWeekkeuze, clearWeekkeuze } = useRecepten();
   const [boodschappenModus, setBoodschappenModus] = useState(false);
   const [afgevinkt, setAfgevinkt] = useState<Set<string>>(new Set());
@@ -78,11 +82,10 @@ export default function WeekkeuzeTab() {
         <div style={{
           background: 'var(--cobalt)', padding: '16px 20px',
           display: 'flex', alignItems: 'center', gap: 12,
-          boxShadow: 'var(--shadow)',
-          position: 'sticky', top: 0,
+          boxShadow: 'var(--shadow)', position: 'sticky', top: 0,
         }}>
           <button onClick={() => setBoodschappenModus(false)} style={{ color: '#fff', display: 'flex' }}>
-            <X size={22} />
+            <X size={22} weight="bold" />
           </button>
           <h2 style={{ fontFamily: 'var(--font-title)', fontSize: 22, fontWeight: 700, flex: 1, color: '#fff' }}>
             Boodschappenlijst
@@ -105,13 +108,9 @@ export default function WeekkeuzeTab() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
                     padding: '12px 14px',
-                    background: 'var(--card)',
-                    borderRadius: 10,
-                    textAlign: 'left',
-                    opacity: isAfgevinkt ? 0.45 : 1,
-                    transition: 'opacity 0.15s',
+                    background: 'var(--card)', borderRadius: 10, textAlign: 'left',
+                    opacity: isAfgevinkt ? 0.45 : 1, transition: 'opacity 0.15s',
                     borderBottom: '1px solid rgba(26,26,46,0.05)',
-                    borderLeft: '3px solid var(--cobalt)',
                   }}
                 >
                   <div style={{
@@ -120,7 +119,7 @@ export default function WeekkeuzeTab() {
                     background: isAfgevinkt ? 'var(--olive)' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {isAfgevinkt && <Check size={13} color="#fff" strokeWidth={3} />}
+                    {isAfgevinkt && <Check size={13} weight="bold" color="#fff" />}
                   </div>
                   <span style={{
                     flex: 1, fontSize: 15,
@@ -142,8 +141,8 @@ export default function WeekkeuzeTab() {
             onClick={exporteerBoodschappen}
             style={{
               marginTop: 24, width: '100%', padding: '13px',
-              borderRadius: 12, background: 'var(--olive)',
-              color: '#fff', fontSize: 15, fontWeight: 600,
+              borderRadius: 12, background: 'var(--olive)', color: '#fff',
+              fontSize: 15, fontWeight: 600,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               boxShadow: '0 4px 14px rgba(74,124,89,0.30)',
             }}
@@ -159,7 +158,10 @@ export default function WeekkeuzeTab() {
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       <div style={{ padding: '20px 20px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 40, fontWeight: 700, flex: 1, lineHeight: 1.05, color: 'var(--ink)' }}>
+        <h1 style={{
+          fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900,
+          flex: 1, lineHeight: 1.0, color: 'var(--ink)', letterSpacing: '-0.5px',
+        }}>
           Weekkeuze
         </h1>
         {weekRecepten.length > 0 && (
@@ -167,23 +169,38 @@ export default function WeekkeuzeTab() {
             onClick={() => setConfirmClear(true)}
             style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}
           >
-            <Trash2 size={15} /> Wis alles
+            <Trash size={15} /> Wis alles
           </button>
         )}
       </div>
 
       <div style={{ padding: '8px 20px 120px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {weekRecepten.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '56px 0', color: 'var(--text-muted)' }}>
-            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, opacity: 0.75 }}>
-              <WeekLegeState width={140} />
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
+            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              <CookingPot size={64} weight="duotone" color="var(--amber)" />
             </div>
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
               Nog geen recepten gepland.
             </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
               Voeg recepten toe via de Recepten-tab.
             </p>
+            {onGaNaarRecepten && (
+              <button
+                onClick={onGaNaarRecepten}
+                style={{
+                  padding: '11px 24px', borderRadius: 12,
+                  background: 'var(--cobalt)', color: '#fff',
+                  fontSize: 14, fontWeight: 600,
+                  boxShadow: '0 3px 12px rgba(27,63,160,0.25)',
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                }}
+              >
+                <CookingPot size={16} weight="fill" />
+                Ga naar recepten
+              </button>
+            )}
           </div>
         )}
 
@@ -191,14 +208,25 @@ export default function WeekkeuzeTab() {
           <div
             key={weekItem.id}
             style={{
-              background: 'var(--card)', borderRadius: 12,
+              background: 'var(--card)', borderRadius: 14,
               padding: '14px', boxShadow: 'var(--shadow)',
-              borderLeft: '3px solid var(--cobalt)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+              {/* Keuken icoon */}
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                background: 'rgba(26,26,46,0.05)',
+                border: '1px solid rgba(26,26,46,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <GetKeukenIcon keuken={recept!.keuken || ''} style={{ width: 20, height: 20 }} />
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 5, color: 'var(--ink)' }}>
+                <div style={{
+                  fontFamily: 'var(--font-title)', fontWeight: 700, fontSize: 15,
+                  marginBottom: 4, color: 'var(--ink)',
+                }}>
                   {recept!.titel}
                 </div>
                 <WkMoeilijkheidBadge moeilijkheid={recept!.moeilijkheid} />
@@ -207,7 +235,7 @@ export default function WeekkeuzeTab() {
                 onClick={() => removeFromWeekkeuze(weekItem.id)}
                 style={{ color: 'var(--text-muted)', display: 'flex', flexShrink: 0 }}
               >
-                <X size={18} />
+                <X size={18} weight="regular" />
               </button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -216,11 +244,12 @@ export default function WeekkeuzeTab() {
                 onClick={() => updateWeekkeuze(weekItem.id, Math.max(1, weekItem.porties - 1))}
                 style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: 'rgba(26,26,46,0.06)',
+                  background: 'rgba(27,63,160,0.08)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--cobalt)',
                 }}
               >
-                <Minus size={13} />
+                <Minus size={13} weight="bold" />
               </button>
               <span style={{ fontWeight: 700, fontSize: 16, minWidth: 20, textAlign: 'center', color: 'var(--cobalt)' }}>
                 {weekItem.porties}
@@ -229,11 +258,12 @@ export default function WeekkeuzeTab() {
                 onClick={() => updateWeekkeuze(weekItem.id, weekItem.porties + 1)}
                 style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: 'rgba(26,26,46,0.06)',
+                  background: 'rgba(27,63,160,0.08)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--cobalt)',
                 }}
               >
-                <Plus size={13} />
+                <Plus size={13} weight="bold" />
               </button>
             </div>
           </div>
@@ -243,9 +273,9 @@ export default function WeekkeuzeTab() {
           <button
             onClick={() => setBoodschappenModus(true)}
             style={{
-              marginTop: 8, padding: '13px',
-              borderRadius: 12, background: 'var(--cobalt)',
-              color: '#fff', fontSize: 15, fontWeight: 700,
+              marginTop: 8, padding: '13px', borderRadius: 12,
+              background: 'var(--cobalt)', color: '#fff',
+              fontSize: 15, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               boxShadow: '0 4px 14px rgba(27,63,160,0.28)',
             }}
@@ -287,8 +317,7 @@ export default function WeekkeuzeTab() {
                 onClick={() => setConfirmClear(false)}
                 style={{
                   padding: '13px', borderRadius: 12,
-                  background: 'rgba(26,26,46,0.06)',
-                  color: 'var(--text)', fontSize: 15,
+                  background: 'rgba(26,26,46,0.06)', color: 'var(--text)', fontSize: 15,
                 }}
               >
                 Annuleren

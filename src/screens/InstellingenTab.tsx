@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { LogOut, Copy, Check, Users, Upload, FileJson, X } from 'lucide-react';
+import { SignOut, Copy, Check, UsersThree, Upload, FileText, X, UserCircle, CheckCircle } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useRecepten } from '../context/ReceptenContext';
@@ -341,7 +341,7 @@ export default function InstellingenTab() {
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       <div style={{ padding: '20px 20px 8px' }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 40, fontWeight: 700, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.05 }}>
+        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.0, letterSpacing: '-0.5px' }}>
           Instellingen
         </h1>
       </div>
@@ -349,7 +349,7 @@ export default function InstellingenTab() {
       <div style={{ padding: '8px 20px 48px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* Account */}
-        <SettingsSection title="Account">
+        <SettingsSection title="Account" icon={<UserCircle size={13} weight="duotone" />}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
             padding: '14px', background: 'var(--card)',
@@ -386,17 +386,16 @@ export default function InstellingenTab() {
               background: 'var(--card)', boxShadow: 'var(--shadow)',
               color: 'var(--crimson)', fontSize: 14, fontWeight: 600,
               width: '100%', textAlign: 'left',
-              borderLeft: '3px solid var(--crimson)',
             }}
           >
-            <LogOut size={18} />
+            <SignOut size={18} />
             Uitloggen
           </button>
         </SettingsSection>
 
         {/* Huishouden */}
         {household && (
-          <SettingsSection title="Huishouden">
+          <SettingsSection title="Huishouden" icon={<UsersThree size={13} weight="duotone" />}>
             <div style={{ background: 'var(--card)', borderRadius: 14, boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
               <SettingsRow label="Naam" value={household.naam} />
               <div style={{ display: 'flex', alignItems: 'center', padding: '12px 14px', borderBottom: '1px solid rgba(26,26,46,0.06)' }}>
@@ -415,11 +414,11 @@ export default function InstellingenTab() {
                     color: codeCopied ? '#fff' : 'var(--text-secondary)', transition: 'all 0.2s',
                   }}
                 >
-                  {codeCopied ? <Check size={16} /> : <Copy size={16} />}
+                  {codeCopied ? <Check size={16} weight="bold" /> : <Copy size={16} />}
                 </button>
               </div>
               <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Users size={16} color="var(--text-muted)" />
+                <UsersThree size={16} color="var(--text-muted)" />
                 <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
                   {household.leden.length} lid{household.leden.length !== 1 ? 'en' : ''}
                 </span>
@@ -432,7 +431,7 @@ export default function InstellingenTab() {
         )}
 
         {/* ── Recepten importeren ── */}
-        <SettingsSection title="Importeren">
+        <SettingsSection title="Importeren" icon={<Upload size={13} weight="duotone" />}>
           {importStatus === 'idle' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
@@ -463,7 +462,7 @@ export default function InstellingenTab() {
                   width: '100%', textAlign: 'left',
                 }}
               >
-                <FileJson size={18} color="var(--accent2)" />
+                <FileText size={18} color="var(--olive)" />
                 JSON-bestand kiezen
               </button>
 
@@ -488,7 +487,7 @@ export default function InstellingenTab() {
               </div>
 
               {importError && (
-                <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{importError}</p>
+                <p style={{ color: 'var(--crimson)', fontSize: 13 }}>{importError}</p>
               )}
 
               <button
@@ -503,7 +502,7 @@ export default function InstellingenTab() {
                   boxShadow: jsonTekst.trim() ? '0 3px 12px rgba(27,63,160,0.25)' : 'none',
                 }}
               >
-                <Upload size={16} />
+                <CheckCircle size={16} weight="duotone" />
                 Controleer JSON
               </button>
             </div>
@@ -523,7 +522,7 @@ export default function InstellingenTab() {
                   {geselecteerd.size === importRecepten.length ? 'Deselecteer alles' : 'Selecteer alles'}
                 </button>
                 <button onClick={resetImport} style={{ color: 'var(--text-muted)', display: 'flex' }}>
-                  <X size={18} />
+                  <X size={18} weight="bold" />
                 </button>
               </div>
 
@@ -548,7 +547,7 @@ export default function InstellingenTab() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.1s',
                     }}>
-                      {geselecteerd.has(i) && <Check size={13} color="#fff" strokeWidth={3} />}
+                      {geselecteerd.has(i) && <Check size={13} color="#fff" weight="bold" />}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
@@ -577,7 +576,7 @@ export default function InstellingenTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
-                <Upload size={16} />
+                <Upload size={16} weight="duotone" />
                 Importeer {geselecteerd.size} recept{geselecteerd.size !== 1 ? 'en' : ''}
               </button>
             </div>
@@ -615,7 +614,7 @@ export default function InstellingenTab() {
                 width: 48, height: 48, borderRadius: 14, background: 'var(--olive)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Check size={26} color="#fff" strokeWidth={2.5} />
+                <Check size={26} color="#fff" weight="bold" />
               </div>
               <div>
                 <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>
@@ -651,12 +650,16 @@ export default function InstellingenTab() {
   );
 }
 
-function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+function SettingsSection({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <h3 style={{ fontSize: 11, fontWeight: 700, color: 'var(--cobalt)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
-        {title}
-      </h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--cobalt)' }}>
+        {icon}
+        <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
+          {title}
+        </h3>
+        <div style={{ flex: 1, height: 1, background: 'rgba(27,63,160,0.12)', marginLeft: 4 }} />
+      </div>
       {children}
     </section>
   );

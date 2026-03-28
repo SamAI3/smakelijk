@@ -1,4 +1,4 @@
-import { Home, CalendarCheck, Settings } from 'lucide-react';
+import { CookingPot, CalendarDots, GearSix } from '@phosphor-icons/react';
 import { SidebarDecoratie } from './illustrations/Decorations';
 
 type Tab = 'recepten' | 'weekkeuze' | 'instellingen';
@@ -10,10 +10,10 @@ interface TabBarProps {
 }
 
 export default function TabBar({ activeTab, onTabChange, vertical = false }: TabBarProps) {
-  const tabs: { id: Tab; label: string; Icon: typeof Home }[] = [
-    { id: 'recepten', label: 'Recepten', Icon: Home },
-    { id: 'weekkeuze', label: 'Weekkeuze', Icon: CalendarCheck },
-    { id: 'instellingen', label: 'Instellingen', Icon: Settings },
+  const tabs: { id: Tab; label: string; Icon: typeof CookingPot }[] = [
+    { id: 'recepten', label: 'Recepten', Icon: CookingPot },
+    { id: 'weekkeuze', label: 'Weekkeuze', Icon: CalendarDots },
+    { id: 'instellingen', label: 'Instellingen', Icon: GearSix },
   ];
 
   if (vertical) {
@@ -59,7 +59,7 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
             >
               <Icon
                 size={20}
-                strokeWidth={active ? 2.2 : 1.8}
+                weight={active ? 'fill' : 'regular'}
                 color={active ? 'var(--cobalt)' : 'rgba(255,255,255,0.75)'}
               />
               {label}
@@ -67,7 +67,6 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
           );
         })}
 
-        {/* Bottom decoration */}
         <div style={{ flex: 1 }} />
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, opacity: 0.7 }}>
           <SidebarDecoratie width={64} />
@@ -102,7 +101,7 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
               transition: 'color 0.15s',
             }}
           >
-            <Icon size={22} strokeWidth={active ? 2.2 : 1.8} />
+            <Icon size={22} weight={active ? 'fill' : 'regular'} />
             <span style={{ fontSize: 11, fontWeight: active ? 700 : 400 }}>{label}</span>
           </button>
         );

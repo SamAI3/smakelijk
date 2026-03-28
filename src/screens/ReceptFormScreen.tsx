@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, Plus, Trash2, Link, Camera, FileText, Loader, Wand2, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Plus, Trash, Link, Camera, FileText, Spinner, MagicWand, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { Recept, Ingredient, Eenheid, ReceptType, Moeilijkheid } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
 import {
@@ -179,8 +179,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
           disabled={!form.titel.trim() || saving}
           style={{
             padding: '8px 16px', borderRadius: 10,
-            background: form.titel.trim() ? 'var(--accent1)' : 'rgba(45,42,38,0.12)',
-            color: form.titel.trim() ? '#fff' : '#A09A93',
+            background: form.titel.trim() ? 'var(--cobalt)' : 'rgba(26,26,46,0.12)',
+            color: form.titel.trim() ? '#fff' : 'var(--text-muted)',
             fontSize: 14, fontWeight: 600, transition: 'all 0.15s',
           }}
         >
@@ -192,7 +192,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {!bestaandRecept && (
         <div style={{ padding: '12px 20px 0' }}>
           <div style={{
-            display: 'flex', background: 'rgba(45,42,38,0.06)',
+            display: 'flex', background: 'rgba(26,26,46,0.06)',
             borderRadius: 12, padding: 4, gap: 2,
           }}>
             {([
@@ -207,7 +207,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                   padding: '8px 6px', borderRadius: 9, fontSize: 13, fontWeight: 500,
                   background: activeTab === id ? 'var(--card)' : 'transparent',
-                  color: activeTab === id ? 'var(--text)' : '#7A7570',
+                  color: activeTab === id ? 'var(--text)' : 'var(--text-secondary)',
                   boxShadow: activeTab === id ? 'var(--shadow)' : 'none',
                   transition: 'all 0.15s',
                 }}
@@ -222,7 +222,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {/* URL tab */}
       {activeTab === 'url' && (
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <p style={{ fontSize: 14, color: '#7A7570' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
             Plak de URL van een recept. De AI haalt de ingrediënten en bereiding op.
           </p>
           <input
@@ -230,15 +230,15 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             value={urlInput} onChange={(e) => setUrlInput(e.target.value)}
             style={inputStyle}
           />
-          {aiError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{aiError}</p>}
+          {aiError && <p style={{ color: 'var(--crimson)', fontSize: 13 }}>{aiError}</p>}
           <button
             onClick={handleUrlParse}
             disabled={!urlInput.trim() || aiLoading}
             style={aiButtonStyle(aiLoading)}
           >
             {aiLoading
-              ? <><Loader size={16} style={spinStyle} /> Bezig…</>
-              : <><Wand2 size={16} /> Recept ophalen</>
+              ? <><Spinner size={16} style={spinStyle} /> Bezig…</>
+              : <><MagicWand size={16} /> Recept ophalen</>
             }
           </button>
         </div>
@@ -247,10 +247,10 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
       {/* Foto tab */}
       {activeTab === 'foto' && (
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <p style={{ fontSize: 14, color: '#7A7570' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
             Selecteer één of meerdere foto's (bijv. twee pagina's van een kookboek). De AI verwerkt ze samen als één recept.
           </p>
-          {aiError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{aiError}</p>}
+          {aiError && <p style={{ color: 'var(--crimson)', fontSize: 13 }}>{aiError}</p>}
 
           <input
             ref={fileInputRef}
@@ -269,14 +269,14 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             disabled={aiLoading}
             style={{
               padding: '28px 20px', borderRadius: 16,
-              border: `2px dashed ${fotoFiles.length > 0 ? 'var(--accent2)' : 'rgba(45,42,38,0.15)'}`,
+              border: `2px dashed ${fotoFiles.length > 0 ? 'var(--olive)' : 'rgba(26,26,46,0.15)'}`,
               background: fotoFiles.length > 0 ? 'rgba(123,140,82,0.06)' : 'var(--card)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-              color: '#7A7570', transition: 'all 0.15s',
+              color: 'var(--text-secondary)', transition: 'all 0.15s',
             }}
           >
-            <Camera size={26} color={fotoFiles.length > 0 ? 'var(--accent2)' : '#A09A93'} />
-            <span style={{ fontSize: 14, color: fotoFiles.length > 0 ? 'var(--accent2)' : '#7A7570', fontWeight: fotoFiles.length > 0 ? 600 : 400 }}>
+            <Camera size={26} color={fotoFiles.length > 0 ? 'var(--olive)' : 'var(--text-muted)'} />
+            <span style={{ fontSize: 14, color: fotoFiles.length > 0 ? 'var(--olive)' : 'var(--text-secondary)', fontWeight: fotoFiles.length > 0 ? 600 : 400 }}>
               {fotoFiles.length > 0
                 ? `${fotoFiles.length} foto${fotoFiles.length > 1 ? "'s" : ''} geselecteerd`
                 : "Foto's kiezen of maken"}
@@ -294,14 +294,14 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   <img
                     src={URL.createObjectURL(file)}
                     alt={`Foto ${i + 1}`}
-                    style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 10, border: '2px solid var(--accent2)' }}
+                    style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 10, border: '2px solid var(--olive)' }}
                   />
                   <button
                     onClick={() => setFotoFiles((prev) => prev.filter((_, idx) => idx !== i))}
                     style={{
                       position: 'absolute', top: -6, right: -6,
                       width: 20, height: 20, borderRadius: '50%',
-                      background: 'var(--accent1)', color: '#fff',
+                      background: 'var(--cobalt)', color: '#fff',
                       fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
                       lineHeight: 1,
                     }}
@@ -323,8 +323,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
             }}
           >
             {aiLoading
-              ? <><Loader size={16} style={spinStyle} /> Verwerken… (10–20 sec)</>
-              : <><Wand2 size={16} /> {fotoFiles.length > 1 ? `Verwerk ${fotoFiles.length} foto's` : 'Verwerk foto'}</>
+              ? <><Spinner size={16} style={spinStyle} /> Verwerken… (10–20 sec)</>
+              : <><MagicWand size={16} /> {fotoFiles.length > 1 ? `Verwerk ${fotoFiles.length} foto's` : 'Verwerk foto'}</>
             }
           </button>
 
@@ -352,7 +352,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   key={t} onClick={() => setField('type', t)}
                   style={{
                     flex: 1, padding: '8px', borderRadius: 10, fontSize: 13,
-                    background: form.type === t ? 'var(--accent1)' : 'rgba(45,42,38,0.06)',
+                    background: form.type === t ? 'var(--cobalt)' : 'rgba(26,26,46,0.06)',
                     color: form.type === t ? '#fff' : 'var(--text)', fontWeight: 500,
                   }}
                 >
@@ -415,7 +415,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   rows={6}
                   style={{ ...inputStyle, resize: 'vertical' }}
                 />
-                {ingError && <p style={{ color: 'var(--accent1)', fontSize: 13 }}>{ingError}</p>}
+                {ingError && <p style={{ color: 'var(--crimson)', fontSize: 13 }}>{ingError}</p>}
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     onClick={handleParseIngredienten}
@@ -427,8 +427,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     }}
                   >
                     {ingLoading
-                      ? <><Loader size={15} style={spinStyle} /> Verwerken…</>
-                      : <><Wand2 size={15} /> Verwerk met AI</>
+                      ? <><Spinner size={15} style={spinStyle} /> Verwerken…</>
+                      : <><MagicWand size={15} /> Verwerk met AI</>
                     }
                   </button>
                   {form.ingredienten.length > 0 && (
@@ -436,7 +436,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                       onClick={() => setIngModus('gestructureerd')}
                       style={{
                         padding: '10px 14px', borderRadius: 10,
-                        background: 'rgba(45,42,38,0.06)', fontSize: 13, color: 'var(--text)',
+                        background: 'rgba(26,26,46,0.06)', fontSize: 13, color: 'var(--text)',
                       }}
                     >
                       Toon lijst
@@ -468,7 +468,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                       style={{ ...inputStyle, flex: 1 }}
                     />
                     <button onClick={() => removeIngredient(i)} style={{ color: '#C0BAB3', flexShrink: 0 }}>
-                      <Trash2 size={16} />
+                      <Trash size={16} />
                     </button>
                   </div>
                 ))}
@@ -478,8 +478,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
                       padding: '10px 14px', borderRadius: 10,
-                      border: '1.5px dashed rgba(45,42,38,0.15)',
-                      color: 'var(--accent1)', fontSize: 13, fontWeight: 500,
+                      border: '1.5px dashed rgba(26,26,46,0.15)',
+                      color: 'var(--cobalt)', fontSize: 13, fontWeight: 500,
                     }}
                   >
                     <Plus size={15} /> Rij toevoegen
@@ -489,11 +489,11 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     style={{
                       display: 'flex', alignItems: 'center', gap: 6,
                       padding: '10px 14px', borderRadius: 10,
-                      color: '#A09A93', fontSize: 13,
-                      border: '1px solid rgba(45,42,38,0.10)',
+                      color: 'var(--text-muted)', fontSize: 13,
+                      border: '1px solid rgba(26,26,46,0.10)',
                     }}
                   >
-                    <RotateCcw size={13} /> Opnieuw invoeren
+                    <ArrowCounterClockwise size={13} /> Opnieuw invoeren
                   </button>
                 </div>
               </>
@@ -518,20 +518,20 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       padding: '11px 14px', borderRadius: 10,
-                      background: berTekst.trim() ? 'var(--accent5)' : 'rgba(45,42,38,0.08)',
-                      color: berTekst.trim() ? '#fff' : '#A09A93',
+                      background: berTekst.trim() ? 'var(--cobalt)' : 'rgba(26,26,46,0.08)',
+                      color: berTekst.trim() ? '#fff' : 'var(--text-muted)',
                       fontSize: 13, fontWeight: 600,
                       opacity: !berTekst.trim() ? 0.5 : 1,
                     }}
                   >
-                    <Wand2 size={15} /> Splits in stappen
+                    <MagicWand size={15} /> Splits in stappen
                   </button>
                   {form.bereiding.length > 0 && (
                     <button
                       onClick={() => setBerModus('gestructureerd')}
                       style={{
                         padding: '10px 14px', borderRadius: 10,
-                        background: 'rgba(45,42,38,0.06)', fontSize: 13, color: 'var(--text)',
+                        background: 'rgba(26,26,46,0.06)', fontSize: 13, color: 'var(--text)',
                       }}
                     >
                       Toon stappen
@@ -545,7 +545,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                     <div style={{
                       flexShrink: 0, width: 24, height: 24, borderRadius: 6,
-                      background: 'var(--accent1)', display: 'flex', alignItems: 'center',
+                      background: 'var(--cobalt)', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', marginTop: 10,
                     }}>
                       {i + 1}
@@ -558,7 +558,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                       style={{ ...inputStyle, flex: 1, resize: 'vertical' }}
                     />
                     <button onClick={() => removeStap(i)} style={{ color: '#C0BAB3', marginTop: 10, flexShrink: 0 }}>
-                      <Trash2 size={16} />
+                      <Trash size={16} />
                     </button>
                   </div>
                 ))}
@@ -568,8 +568,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
                       padding: '10px 14px', borderRadius: 10,
-                      border: '1.5px dashed rgba(45,42,38,0.15)',
-                      color: 'var(--accent1)', fontSize: 13, fontWeight: 500,
+                      border: '1.5px dashed rgba(26,26,46,0.15)',
+                      color: 'var(--cobalt)', fontSize: 13, fontWeight: 500,
                     }}
                   >
                     <Plus size={15} /> Stap toevoegen
@@ -579,11 +579,11 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     style={{
                       display: 'flex', alignItems: 'center', gap: 6,
                       padding: '10px 14px', borderRadius: 10,
-                      color: '#A09A93', fontSize: 13,
-                      border: '1px solid rgba(45,42,38,0.10)',
+                      color: 'var(--text-muted)', fontSize: 13,
+                      border: '1px solid rgba(26,26,46,0.10)',
                     }}
                   >
-                    <RotateCcw size={13} /> Opnieuw invoeren
+                    <ArrowCounterClockwise size={13} /> Opnieuw invoeren
                   </button>
                 </div>
               </>
@@ -604,7 +604,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                 onClick={addTag}
                 style={{
                   padding: '10px 14px', borderRadius: 10,
-                  background: 'var(--accent2)', color: '#fff', fontWeight: 500, fontSize: 13,
+                  background: 'var(--olive)', color: '#fff', fontWeight: 500, fontSize: 13,
                 }}
               >
                 Toevoegen
@@ -618,12 +618,12 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                     onClick={() => setField('tags', form.tags.filter((t) => t !== tag))}
                     style={{
                       padding: '5px 10px', borderRadius: 8,
-                      background: 'rgba(45,42,38,0.08)',
+                      background: 'rgba(26,26,46,0.08)',
                       fontSize: 13, color: 'var(--text)',
                       display: 'flex', alignItems: 'center', gap: 5,
                     }}
                   >
-                    {tag} <span style={{ color: '#A09A93' }}>×</span>
+                    {tag} <span style={{ color: 'var(--text-muted)' }}>×</span>
                   </button>
                 ))}
               </div>
@@ -653,9 +653,6 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
         </div>
       )}
 
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }
@@ -674,7 +671,7 @@ function FormSection({ title, children }: { title: string; children: React.React
 function LabeledInput({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <label style={{ fontSize: 12, fontWeight: 500, color: '#7A7570', textTransform: 'uppercase', letterSpacing: 0.3 }}>
+      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.3 }}>
         {label}
       </label>
       {children}
@@ -684,7 +681,7 @@ function LabeledInput({ label, children }: { label: string; children: React.Reac
 
 const inputStyle: React.CSSProperties = {
   padding: '10px 12px', borderRadius: 10,
-  border: '1.5px solid rgba(45,42,38,0.10)',
+  border: '1.5px solid rgba(26,26,46,0.10)',
   background: 'var(--card)', fontSize: 14, color: 'var(--text)',
   outline: 'none', width: '100%',
 };
@@ -694,7 +691,7 @@ const spinStyle: React.CSSProperties = { animation: 'spin 1s linear infinite' };
 function aiButtonStyle(loading: boolean): React.CSSProperties {
   return {
     padding: '11px 16px', borderRadius: 10,
-    background: 'var(--accent1)', color: '#fff',
+    background: 'var(--cobalt)', color: '#fff',
     fontSize: 13, fontWeight: 600,
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
     opacity: loading ? 0.7 : 1,

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  ArrowLeft, Star, CalendarPlus, Edit2, Trash2,
-  Minus, Plus, Maximize2, ChevronRight
-} from 'lucide-react';
+  ArrowLeft, Heart, CalendarPlus, PencilSimple, Trash,
+  Minus, Plus, CornersOut, CaretRight, Basket, ListNumbers,
+} from '@phosphor-icons/react';
 import { Recept } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
@@ -138,7 +138,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
                 <div key={i} style={{ display: 'flex', gap: 16 }}>
                   <div style={{
                     flexShrink: 0, width: isTablet ? 40 : 32, height: isTablet ? 40 : 32,
-                    borderRadius: 10, background: 'var(--accent1)',
+                    borderRadius: 10, background: 'var(--cobalt)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: isTablet ? 16 : 14, fontWeight: 700, color: '#fff',
                   }}>
@@ -166,14 +166,14 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
             <ArrowLeft size={22} />
           </button>
           <div style={{ flex: 1 }} />
-          <button onClick={toggleFavoriet} style={{ display: 'flex', color: recept.favoriet ? 'var(--accent3)' : '#C0BAB3' }}>
-            <Star size={22} fill={recept.favoriet ? 'var(--accent3)' : 'none'} />
+          <button onClick={toggleFavoriet} style={{ display: 'flex', color: recept.favoriet ? 'var(--amber)' : '#C0BAB3' }}>
+            <Heart size={22} weight={recept.favoriet ? 'fill' : 'regular'} />
           </button>
-          <button onClick={() => onEdit(recept)} style={{ display: 'flex', color: '#7A7570' }}>
-            <Edit2 size={20} />
+          <button onClick={() => onEdit(recept)} style={{ display: 'flex', color: 'var(--text-secondary)' }}>
+            <PencilSimple size={20} />
           </button>
-          <button onClick={() => setConfirmDelete(true)} style={{ display: 'flex', color: 'var(--accent1)' }}>
-            <Trash2 size={20} />
+          <button onClick={() => setConfirmDelete(true)} style={{ display: 'flex', color: 'var(--crimson)' }}>
+            <Trash size={20} />
           </button>
         </div>
 
@@ -189,19 +189,19 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
 
         {/* Portie aanpasser */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 14, color: '#7A7570' }}>Porties:</span>
+          <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Porties:</span>
           <button
             onClick={() => setPorties(Math.max(1, porties - 1))}
-            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(45,42,38,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(27,63,160,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
           >
-            <Minus size={14} />
+            <Minus size={14} weight="bold" />
           </button>
-          <span style={{ fontWeight: 700, fontSize: 17, minWidth: 24, textAlign: 'center' }}>{porties}</span>
+          <span style={{ fontWeight: 700, fontSize: 17, minWidth: 24, textAlign: 'center', color: 'var(--cobalt)' }}>{porties}</span>
           <button
             onClick={() => setPorties(porties + 1)}
-            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(45,42,38,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(27,63,160,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
           >
-            <Plus size={14} />
+            <Plus size={14} weight="bold" />
           </button>
         </div>
       </div>
@@ -212,13 +212,13 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
           onClick={handleAddToWeek}
           style={{
             flex: 1, padding: '10px 12px', borderRadius: 12,
-            background: isInWeek || toegevoegd ? 'var(--accent2)' : 'var(--accent1)',
+            background: isInWeek || toegevoegd ? 'var(--olive)' : 'var(--cobalt)',
             color: '#fff', fontSize: 13, fontWeight: 600,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             transition: 'background 0.2s',
           }}
         >
-          <CalendarPlus size={16} />
+          <CalendarPlus size={16} weight="duotone" />
           {toegevoegd ? 'Toegevoegd!' : isInWeek ? 'Nog een keer' : 'Weekkeuze'}
         </button>
         <button
@@ -231,7 +231,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
             boxShadow: 'var(--shadow)',
           }}
         >
-          <Maximize2 size={16} />
+          <CornersOut size={16} weight="duotone" />
           Kookmodus
         </button>
       </div>
@@ -248,7 +248,8 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
         {/* Ingrediënten */}
         {recept.ingredienten.length > 0 && (
           <section>
-            <h2 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 22 : 20, marginBottom: 12 }}>
+            <h2 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 22 : 20, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Basket size={20} weight="duotone" color="var(--cobalt)" />
               Ingrediënten
             </h2>
             <div style={{ background: 'var(--card)', borderRadius: 14, boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
@@ -261,7 +262,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
                   }}
                 >
                   <span style={{ fontSize: 14, color: 'var(--text)', flex: 1 }}>{ing.naam}</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent1)', flexShrink: 0 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cobalt)', flexShrink: 0 }}>
                     {ing.hoeveelheid > 0 ? `${formatHoeveelheid(ing.hoeveelheid)} ${ing.eenheid}` : ing.eenheid}
                   </span>
                 </div>
@@ -280,7 +281,8 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
         {/* Bereiding */}
         {recept.bereiding.length > 0 && (
           <section>
-            <h2 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 22 : 20, marginBottom: 12 }}>
+            <h2 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 22 : 20, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ListNumbers size={20} weight="duotone" color="var(--cobalt)" />
               Bereiding
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -288,7 +290,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
                 <div key={i} style={{ display: 'flex', gap: 12 }}>
                   <div style={{
                     flexShrink: 0, width: 28, height: 28, borderRadius: 8,
-                    background: 'var(--accent1)', display: 'flex', alignItems: 'center',
+                    background: 'var(--cobalt)', display: 'flex', alignItems: 'center',
                     justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', marginTop: 2,
                   }}>
                     {i + 1}
@@ -321,11 +323,11 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '12px 14px', background: 'var(--card)', borderRadius: 12,
-                boxShadow: 'var(--shadow)', color: 'var(--accent5)', fontSize: 13, fontWeight: 500,
+                boxShadow: 'var(--shadow)', color: 'var(--cobalt)', fontSize: 13, fontWeight: 500,
               }}
             >
               <span style={{ flex: 1 }}>Bekijk origineel recept</span>
-              <ChevronRight size={16} />
+              <CaretRight size={16} weight="bold" />
             </a>
           )}
         </div>
@@ -344,19 +346,19 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
             <h3 style={{ fontFamily: 'var(--font-title)', fontSize: 20, marginBottom: 8 }}>
               Recept verwijderen?
             </h3>
-            <p style={{ color: '#7A7570', fontSize: 14, marginBottom: 20 }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 20 }}>
               Dit kan niet ongedaan worden gemaakt.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
                 onClick={handleDelete}
-                style={{ padding: '13px', borderRadius: 12, background: 'var(--accent1)', color: '#fff', fontSize: 15, fontWeight: 600 }}
+                style={{ padding: '13px', borderRadius: 12, background: 'var(--crimson)', color: '#fff', fontSize: 15, fontWeight: 600 }}
               >
                 Verwijderen
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
-                style={{ padding: '13px', borderRadius: 12, background: 'rgba(45,42,38,0.06)', color: 'var(--text)', fontSize: 15 }}
+                style={{ padding: '13px', borderRadius: 12, background: 'rgba(26,26,46,0.06)', color: 'var(--text)', fontSize: 15 }}
               >
                 Annuleren
               </button>
@@ -372,8 +374,8 @@ function Chip({ label }: { label: string }) {
   return (
     <span style={{
       padding: '4px 10px', borderRadius: 8,
-      background: 'rgba(45,42,38,0.06)',
-      fontSize: 12, color: '#7A7570', textTransform: 'capitalize',
+      background: 'rgba(26,26,46,0.06)',
+      fontSize: 12, color: 'var(--text-secondary)', textTransform: 'capitalize',
     }}>
       {label}
     </span>

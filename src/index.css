@@ -126,6 +126,37 @@
   animation: float 3.2s ease-in-out infinite;
 }
 
+/* Spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Featured recipe card */
+.recipe-featured-card {
+  animation: cardReveal 0.32s ease-out backwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.recipe-featured-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(26,26,46,0.13) !important;
+}
+.recipe-featured-card:active {
+  transform: translateY(-1px);
+}
+
+/* Compact recipe row */
+.recipe-compact-row {
+  transition: background 0.12s ease;
+  border-radius: 10px;
+}
+.recipe-compact-row:hover {
+  background: rgba(26,26,46,0.035);
+}
+.recipe-compact-row:active {
+  background: rgba(26,26,46,0.07);
+}
+
 /* Skeleton loader */
 .skeleton {
   background: linear-gradient(

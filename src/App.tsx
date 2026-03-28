@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { IconContext } from '@phosphor-icons/react';
 import { useWindowWidth, TABLET } from './hooks/useWindowWidth';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { HouseholdProvider, useHousehold } from './context/HouseholdContext';
@@ -35,7 +36,7 @@ function AppInner() {
       }}>
         <div style={{
           width: 40, height: 40, borderRadius: 12,
-          background: 'var(--accent1)', opacity: 0.6,
+          background: 'var(--cobalt)', opacity: 0.6,
           animation: 'pulse 1.2s ease-in-out infinite',
         }} />
         <style>{`
@@ -51,7 +52,6 @@ function AppInner() {
   if (!user) return <LoginScreen />;
   if (!household) return <OnboardingScreen />;
 
-  // Detail scherm
   if (screen.type === 'detail') {
     return (
       <ReceptDetailScreen
@@ -62,7 +62,6 @@ function AppInner() {
     );
   }
 
-  // Formulier scherm
   if (screen.type === 'form') {
     return (
       <ReceptFormScreen
@@ -74,22 +73,17 @@ function AppInner() {
             setScreen({ type: 'tabs' });
           }
         }}
-        onSaved={(receptId) => {
-          // Na opslaan: ga naar detail of terug naar lijst
-          setScreen({ type: 'tabs' });
-        }}
+        onSaved={() => setScreen({ type: 'tabs' })}
       />
     );
   }
 
-  // Hoofd tabs
   return (
     <>
       <div style={{
         flex: 1, overflow: 'hidden', display: 'flex',
         flexDirection: isTablet ? 'row' : 'column',
       }}>
-        {/* Verticale sidebar op tablet */}
         {isTablet && (
           <TabBar activeTab={activeTab} onTabChange={setActiveTab} vertical />
         )}
@@ -102,11 +96,12 @@ function AppInner() {
               onAddRecept={() => setScreen({ type: 'form' })}
             />
           )}
-          {activeTab === 'weekkeuze' && <WeekkeuzeTab />}
+          {activeTab === 'weekkeuze' && (
+            <WeekkeuzeTab onGaNaarRecepten={() => setActiveTab('recepten')} />
+          )}
           {activeTab === 'instellingen' && <InstellingenTab />}
         </div>
       </div>
-      {/* Bottom tab bar alleen op mobiel */}
       {!isTablet && <TabBar activeTab={activeTab} onTabChange={setActiveTab} />}
     </>
   );
@@ -114,12 +109,14 @@ function AppInner() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <HouseholdProvider>
-        <ReceptenProvider>
-          <AppInner />
-        </ReceptenProvider>
-      </HouseholdProvider>
-    </AuthProvider>
+    <IconContext.Provider value={{ weight: 'duotone', size: 24, color: 'currentColor' }}>
+      <AuthProvider>
+        <HouseholdProvider>
+          <ReceptenProvider>
+            <AppInner />
+          </ReceptenProvider>
+        </HouseholdProvider>
+      </AuthProvider>
+    </IconContext.Provider>
   );
 }
