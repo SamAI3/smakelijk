@@ -8,17 +8,72 @@ import { Recept, ReceptType, Moeilijkheid } from '../types';
 // ── JSON import types ────────────────────────────────────────────
 type ImportRecept = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
 
+const GELDIGE_EENHEDEN = new Set([
+  'gram', 'kg', 'ml', 'liter', 'stuks', 'el', 'tl',
+  'snuf', 'pak', 'blik', 'teen', 'takje', 'blad',
+]);
+
+type EenheidConversie = { eenheid: string; factor?: number };
+
+const EENHEID_MAP: Record<string, EenheidConversie> = {
+  tablespoon: { eenheid: 'el' },
+  tablespoons: { eenheid: 'el' },
+  tbsp: { eenheid: 'el' },
+  teaspoon: { eenheid: 'tl' },
+  teaspoons: { eenheid: 'tl' },
+  tsp: { eenheid: 'tl' },
+  cup: { eenheid: 'ml', factor: 240 },
+  cups: { eenheid: 'ml', factor: 240 },
+  ounce: { eenheid: 'gram', factor: 28 },
+  ounces: { eenheid: 'gram', factor: 28 },
+  oz: { eenheid: 'gram', factor: 28 },
+  pound: { eenheid: 'gram', factor: 454 },
+  pounds: { eenheid: 'gram', factor: 454 },
+  lb: { eenheid: 'gram', factor: 454 },
+  lbs: { eenheid: 'gram', factor: 454 },
+  piece: { eenheid: 'stuks' },
+  pieces: { eenheid: 'stuks' },
+  clove: { eenheid: 'teen' },
+  cloves: { eenheid: 'teen' },
+  sprig: { eenheid: 'takje' },
+  sprigs: { eenheid: 'takje' },
+  leaf: { eenheid: 'blad' },
+  leaves: { eenheid: 'blad' },
+  pinch: { eenheid: 'snuf' },
+  can: { eenheid: 'blik' },
+  pack: { eenheid: 'pak' },
+  package: { eenheid: 'pak' },
+};
+
+function normaliseerEenheid(
+  eenheid: string,
+  hoeveelheid: number
+): { eenheid: string; hoeveelheid: number } {
+  const key = eenheid.trim().toLowerCase();
+  if (GELDIGE_EENHEDEN.has(key)) return { eenheid: key, hoeveelheid };
+  const conversie = EENHEID_MAP[key];
+  if (conversie) {
+    return {
+      eenheid: conversie.eenheid,
+      hoeveelheid: conversie.factor ? Math.round(hoeveelheid * conversie.factor) : hoeveelheid,
+    };
+  }
+  return { eenheid: 'stuks', hoeveelheid };
+}
+
 function normaliseerRecept(raw: Record<string, unknown>): ImportRecept {
   return {
     titel: String(raw.titel ?? ''),
     type: (['hoofdgerecht', 'overig'].includes(raw.type as string)
       ? raw.type : 'hoofdgerecht') as ReceptType,
     ingredienten: Array.isArray(raw.ingredienten)
-      ? (raw.ingredienten as Record<string, unknown>[]).map((ing) => ({
-          hoeveelheid: Number(ing.hoeveelheid ?? 0),
-          eenheid: String(ing.eenheid ?? 'stuks'),
-          naam: String(ing.naam ?? ''),
-        }))
+      ? (raw.ingredienten as Record<string, unknown>[]).map((ing) => {
+          const { eenheid, hoeveelheid } = normaliseerEenheid(
+            String(ing.eenheid ?? 'stuks'),
+            Number(ing.hoeveelheid ?? 0)
+          );
+          return { hoeveelheid, eenheid, naam: String(ing.naam ?? '') };
+        })
       : [],
     bereiding: Array.isArray(raw.bereiding)
       ? (raw.bereiding as unknown[]).map(String)
