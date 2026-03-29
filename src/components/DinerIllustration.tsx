@@ -18,12 +18,12 @@ interface DinerIllustrationProps {
 }
 
 const sectionPositions: Record<DinerSection, string> = {
-  full:   'center center',
-  wine:   '70% 55%',   // wijnfles + gevuld glas rechts
-  olive:  '80% 5%',    // olijftak rechtsboven
-  bread:  '82% 88%',   // stokbrood + pastabord rechtsonder
-  cheese: '48% 38%',   // kaas + olijven midden
-  candle: '32% 18%',   // kaars + leeg glas linksboven
+  full:   'center 65%',  // wijnfles, glazen, brood — het rijkste deel
+  wine:   '70% 55%',    // wijnfles + gevuld glas rechts
+  olive:  '80% 5%',     // olijftak rechtsboven
+  bread:  '82% 88%',    // stokbrood + pastabord rechtsonder
+  cheese: '48% 38%',    // kaas + olijven midden
+  candle: '32% 18%',    // kaars + leeg glas linksboven
 };
 
 export default function DinerIllustration({

@@ -134,7 +134,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         }}>
           <DinerIllustration
             section="full"
-            style={{ width: '100%', height: '100%', objectPosition: 'center 30%' }}
+            style={{ width: '100%', height: '100%', objectPosition: 'center 85%' }}
             loading="eager"
           />
           {/* Gradient overlay onderaan zodat de toggle goed leesbaar is */}
