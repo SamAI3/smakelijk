@@ -4,10 +4,10 @@ import DinerIllustration from '../components/DinerIllustration';
 import { useRecepten } from '../context/ReceptenContext';
 import { Ingredient } from '../types';
 const KEUKEN_EMOJI: Record<string, string> = {
-  'Italiaans': '🍝', 'Frans': '🥐', 'Aziatisch': '🥢', 'Thais': '🥢',
-  'Chinees': '🥢', 'Japans': '🍣', 'Mexicaans': '🌮', 'Spaans': '🫒',
-  'Nederlands': '🧀', 'Indiaas': '🍛', 'Arabisch': '🫕', 'Grieks': '🫒',
-  'Midden-Oosters': '🫕',
+  'Italiaans': '🇮🇹', 'Frans': '🇫🇷', 'Aziatisch': '🌏', 'Thais': '🇹🇭',
+  'Chinees': '🇨🇳', 'Japans': '🇯🇵', 'Mexicaans': '🇲🇽', 'Spaans': '🇪🇸',
+  'Nederlands': '🇳🇱', 'Indiaas': '🇮🇳', 'Arabisch': '🌙', 'Grieks': '🇬🇷',
+  'Midden-Oosters': '🌙',
 };
 function getKeukenEmoji(keuken: string): string {
   return KEUKEN_EMOJI[keuken] ?? '🍽️';

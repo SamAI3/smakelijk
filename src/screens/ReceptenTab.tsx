@@ -9,19 +9,19 @@ import { BestekDecoratie } from '../components/Illustrations';
 import DinerIllustration from '../components/DinerIllustration';
 
 const KEUKEN_EMOJI: Record<string, string> = {
-  'Italiaans': '🍝',
-  'Frans': '🥐',
-  'Aziatisch': '🥢',
-  'Thais': '🥢',
-  'Chinees': '🥢',
-  'Japans': '🍣',
-  'Mexicaans': '🌮',
-  'Spaans': '🫒',
-  'Nederlands': '🧀',
-  'Indiaas': '🍛',
-  'Arabisch': '🫕',
-  'Grieks': '🫒',
-  'Midden-Oosters': '🫕',
+  'Italiaans': '🇮🇹',
+  'Frans': '🇫🇷',
+  'Aziatisch': '🌏',
+  'Thais': '🇹🇭',
+  'Chinees': '🇨🇳',
+  'Japans': '🇯🇵',
+  'Mexicaans': '🇲🇽',
+  'Spaans': '🇪🇸',
+  'Nederlands': '🇳🇱',
+  'Indiaas': '🇮🇳',
+  'Arabisch': '🌙',
+  'Grieks': '🇬🇷',
+  'Midden-Oosters': '🌙',
 };
 function getKeukenEmoji(keuken: string): string {
   return KEUKEN_EMOJI[keuken] ?? '🍽️';
