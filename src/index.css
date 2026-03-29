@@ -87,12 +87,17 @@
 /* Pagina-overgang */
 .page-enter {
   animation: fadeIn 0.28s ease-out;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* Receptkaarten: stagger reveal + hover lift */
 .recipe-card {
   animation: cardReveal 0.32s ease-out backwards;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-left-color 0.15s ease;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .recipe-card:hover {
   transform: translateY(-3px);
@@ -137,6 +142,9 @@
 .recipe-featured-card {
   animation: cardReveal 0.32s ease-out backwards;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .recipe-featured-card:hover {
   transform: translateY(-2px);
@@ -150,6 +158,9 @@
 .recipe-compact-row {
   transition: background 0.12s ease;
   border-radius: 10px;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .recipe-compact-row:hover {
   background: rgba(26,26,46,0.035);
@@ -197,6 +208,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   overflow: hidden;
 }
 
