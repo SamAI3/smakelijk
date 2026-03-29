@@ -89,7 +89,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
     return (
       <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
         <div style={{
-          background: 'var(--cobalt)', padding: '16px 20px',
+          background: 'var(--cobalt)', padding: 'calc(16px + env(safe-area-inset-top, 0px)) 20px 16px',
           display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: 'var(--shadow)', position: 'sticky', top: 0,
         }}>
@@ -166,7 +166,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
 
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
-      <div style={{ padding: '20px 20px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: 'calc(20px + env(safe-area-inset-top, 0px)) 20px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <h1 style={{
           fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900,
           flex: 1, lineHeight: 1.0, color: 'var(--ink)', letterSpacing: '-0.5px',

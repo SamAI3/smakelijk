@@ -115,7 +115,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
         {/* Full-bleed illustratie */}
         <div style={{
           position: 'relative',
-          height: isTablet ? 260 : 200,
+          height: isTablet ? 300 : 260,
           overflow: 'hidden',
           borderRadius: '0 0 20px 20px',
         }}>
@@ -124,10 +124,11 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
             style={{ width: '100%', height: '100%', objectPosition: 'center 70%' }}
             loading="eager"
           />
-          {/* Gradient: subtiel bovenaan (safe-area), sterker onderaan voor leesbaarheid filters */}
+          {/* Donkere top-gradient: status bar iconen leesbaar houden (black-translucent) */}
+          {/* Lichte onderste gradient: filters leesbaar over de illustratie */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(to bottom, rgba(245,240,232,0.15) 0%, transparent 30%, rgba(245,240,232,0.55) 70%, rgba(245,240,232,0.90) 100%)',
+            background: 'linear-gradient(to bottom, rgba(15,10,5,0.28) 0%, transparent 22%, rgba(245,240,232,0.50) 68%, rgba(245,240,232,0.92) 100%)',
             pointerEvents: 'none',
           }} />
 
