@@ -32,17 +32,17 @@ type MoeilijkheidFilter = 'alles' | Moeilijkheid;
 // Subtiele keuken-tint per keuken (max ~7% opacity)
 const KEUKEN_TINT: Record<string, string> = {
   'Italiaans': 'rgba(74,124,89,0.07)',
-  'Frans': 'rgba(27,63,160,0.06)',
+  'Frans': 'rgba(22,45,110,0.06)',
   'Aziatisch': 'rgba(232,168,56,0.08)',
   'Thais': 'rgba(232,168,56,0.08)',
-  'Chinees': 'rgba(184,49,47,0.06)',
+  'Chinees': 'rgba(139,37,41,0.06)',
   'Japans': 'rgba(232,168,56,0.07)',
-  'Mexicaans': 'rgba(184,49,47,0.06)',
-  'Spaans': 'rgba(184,49,47,0.06)',
-  'Nederlands': 'rgba(27,63,160,0.05)',
+  'Mexicaans': 'rgba(139,37,41,0.06)',
+  'Spaans': 'rgba(139,37,41,0.06)',
+  'Nederlands': 'rgba(22,45,110,0.05)',
   'Indiaas': 'rgba(232,168,56,0.09)',
   'Arabisch': 'rgba(212,118,78,0.08)',
-  'Grieks': 'rgba(27,63,160,0.07)',
+  'Grieks': 'rgba(22,45,110,0.07)',
   'Midden-Oosters': 'rgba(212,118,78,0.08)',
 };
 function getKeukenTint(keuken: string): string {
@@ -53,7 +53,7 @@ const ACCENT_COLORS = [
   'var(--cobalt)', 'var(--crimson)', 'var(--olive)', 'var(--amber)', 'var(--accent4)',
 ];
 const ACCENT_BG = [
-  'rgba(27,63,160,0.10)', 'rgba(184,49,47,0.10)', 'rgba(74,124,89,0.10)',
+  'rgba(22,45,110,0.10)', 'rgba(139,37,41,0.10)', 'rgba(74,124,89,0.10)',
   'rgba(232,168,56,0.14)', 'rgba(212,118,78,0.12)',
 ];
 
@@ -160,7 +160,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                 fontSize: 14, fontWeight: 600,
                 background: typeFilter === t ? 'var(--cobalt)' : 'transparent',
                 color: typeFilter === t ? '#ffffff' : 'var(--text-secondary)',
-                boxShadow: typeFilter === t ? '0 2px 8px rgba(27,63,160,0.25)' : 'none',
+                boxShadow: typeFilter === t ? '0 2px 8px rgba(22,45,110,0.25)' : 'none',
                 transition: 'all 0.15s', textTransform: 'capitalize',
               }}
             >
@@ -174,7 +174,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           {([
             { key: 'alles' as const, label: 'Alles', count: telPerMoeilijkheid.alles, activeBg: 'var(--ink)', activeTekst: '#FFFDF7', inactiveBg: 'rgba(26,26,46,0.07)', inactiveTekst: 'var(--text-secondary)' },
             { key: 'doordeweeks' as const, label: 'Doordeweeks', count: telPerMoeilijkheid.doordeweeks, activeBg: 'var(--olive)', activeTekst: '#ffffff', inactiveBg: 'rgba(74,124,89,0.10)', inactiveTekst: 'var(--olive)' },
-            { key: 'weekend' as const, label: 'Weekend', count: telPerMoeilijkheid.weekend, activeBg: 'var(--crimson)', activeTekst: '#ffffff', inactiveBg: 'rgba(184,49,47,0.10)', inactiveTekst: 'var(--crimson)' },
+            { key: 'weekend' as const, label: 'Weekend', count: telPerMoeilijkheid.weekend, activeBg: 'var(--crimson)', activeTekst: '#ffffff', inactiveBg: 'rgba(139,37,41,0.10)', inactiveTekst: 'var(--crimson)' },
           ]).map(({ key, label, count, activeBg, activeTekst, inactiveBg, inactiveTekst }) => {
             const isActief = moeilijkheidFilter === key;
             return (
@@ -247,7 +247,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
                   fontSize: 13, fontWeight: 600,
                   border: '2px solid transparent',
                   transition: 'all 0.15s',
-                  boxShadow: geselecteerdeKeuken === null ? '0 2px 8px rgba(27,63,160,0.22)' : 'none',
+                  boxShadow: geselecteerdeKeuken === null ? '0 2px 8px rgba(22,45,110,0.22)' : 'none',
                   display: 'flex', alignItems: 'center', gap: 5,
                 }}
               >
@@ -331,7 +331,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           width: 56, height: 56, borderRadius: 18,
           background: 'var(--crimson)', color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 18px rgba(184,49,47,0.42)',
+          boxShadow: '0 4px 18px rgba(139,37,41,0.42)',
           zIndex: 10,
         }}
       >
@@ -351,7 +351,7 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string })
       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
         {title}
       </span>
-      <div style={{ flex: 1, height: 1, background: 'rgba(27,63,160,0.12)', marginLeft: 4 }} />
+      <div style={{ flex: 1, height: 1, background: 'rgba(22,45,110,0.12)', marginLeft: 4 }} />
     </div>
   );
 }
@@ -486,7 +486,7 @@ function MoeilijkheidBadge({ moeilijkheid }: { moeilijkheid: 'doordeweeks' | 'we
       display: 'inline-block',
       padding: '2px 7px', borderRadius: 5, fontSize: 10, fontWeight: 700,
       letterSpacing: 0.3, textTransform: 'uppercase',
-      background: isDdw ? 'rgba(74,124,89,0.14)' : 'rgba(184,49,47,0.12)',
+      background: isDdw ? 'rgba(74,124,89,0.14)' : 'rgba(139,37,41,0.12)',
       color: isDdw ? 'var(--olive)' : 'var(--crimson)',
     }}>
       {isDdw ? 'Doordeweeks' : 'Weekend'}

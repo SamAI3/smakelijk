@@ -209,7 +209,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
                   padding: '11px 24px', borderRadius: 12,
                   background: 'var(--cobalt)', color: '#fff',
                   fontSize: 14, fontWeight: 600,
-                  boxShadow: '0 3px 12px rgba(27,63,160,0.25)',
+                  boxShadow: '0 3px 12px rgba(22,45,110,0.25)',
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                 }}
               >
@@ -260,7 +260,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
                 onClick={() => updateWeekkeuze(weekItem.id, Math.max(1, weekItem.porties - 1))}
                 style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: 'rgba(27,63,160,0.08)',
+                  background: 'rgba(22,45,110,0.08)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--cobalt)',
                 }}
@@ -274,7 +274,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
                 onClick={() => updateWeekkeuze(weekItem.id, weekItem.porties + 1)}
                 style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: 'rgba(27,63,160,0.08)',
+                  background: 'rgba(22,45,110,0.08)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--cobalt)',
                 }}
@@ -293,7 +293,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
               background: 'var(--cobalt)', color: '#fff',
               fontSize: 15, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              boxShadow: '0 4px 14px rgba(27,63,160,0.28)',
+              boxShadow: '0 4px 14px rgba(22,45,110,0.28)',
             }}
           >
             <ShoppingCart size={18} />
@@ -324,7 +324,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
                 style={{
                   padding: '13px', borderRadius: 12, background: 'var(--crimson)',
                   color: '#fff', fontSize: 15, fontWeight: 600,
-                  boxShadow: '0 2px 10px rgba(184,49,47,0.28)',
+                  boxShadow: '0 2px 10px rgba(139,37,41,0.28)',
                 }}
               >
                 Wis alles
@@ -353,7 +353,7 @@ function WkMoeilijkheidBadge({ moeilijkheid }: { moeilijkheid: 'doordeweeks' | '
       display: 'inline-block',
       padding: '2px 7px', borderRadius: 5, fontSize: 10, fontWeight: 700,
       letterSpacing: 0.3, textTransform: 'uppercase',
-      background: isDdw ? 'rgba(74,124,89,0.14)' : 'rgba(184,49,47,0.12)',
+      background: isDdw ? 'rgba(74,124,89,0.14)' : 'rgba(139,37,41,0.12)',
       color: isDdw ? 'var(--olive)' : 'var(--crimson)',
     }}>
       {isDdw ? 'Doordeweeks' : 'Weekend'}

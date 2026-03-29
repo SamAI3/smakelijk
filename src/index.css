@@ -6,10 +6,11 @@
 
 :root {
   /* ── Kleurenpalet ── */
-  --cobalt: #1B3FA0;
-  --cobalt-light: #2E5AC7;
-  --crimson: #B8312F;
-  --crimson-light: #D4524F;
+  --cobalt: #162D6E;
+  --cobalt-light: #1B3FA0;
+  --cobalt-dark: #0F1F4D;
+  --crimson: #8B2529;
+  --crimson-light: #B8312F;
   --amber: #E8A838;
   --amber-light: #F2C462;
   --olive: #4A7C59;
@@ -21,11 +22,11 @@
   --border-light: #EDE8DE;
 
   /* ── Legacy accent vars ── */
-  --accent1: #1B3FA0;
+  --accent1: #162D6E;
   --accent2: #4A7C59;
   --accent3: #E8A838;
   --accent4: #D4764E;
-  --accent5: #1B3FA0;
+  --accent5: #162D6E;
 
   /* ── Achtergrond & kaarten ── */
   --bg: #F5F0E8;
@@ -95,7 +96,7 @@
 }
 .recipe-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(27,63,160,0.11);
+  box-shadow: 0 8px 24px rgba(22,45,110,0.11);
   border-left-color: var(--cobalt-light) !important;
 }
 .recipe-card:active {
@@ -109,7 +110,7 @@
 }
 .fab:hover {
   transform: scale(1.09);
-  box-shadow: 0 6px 22px rgba(184,49,47,0.50) !important;
+  box-shadow: 0 6px 22px rgba(139,37,41,0.50) !important;
 }
 .fab:hover svg {
   transform: rotate(45deg);
@@ -175,7 +176,7 @@
   transition: box-shadow 0.2s ease;
 }
 .search-wrapper:focus-within input {
-  box-shadow: 0 0 0 3px rgba(27,63,160,0.14);
+  box-shadow: 0 0 0 3px rgba(22,45,110,0.14);
   outline: none !important;
 }
 

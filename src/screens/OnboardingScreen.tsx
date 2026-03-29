@@ -61,7 +61,7 @@ export default function OnboardingScreen() {
               width: 140, height: 100,
               borderRadius: 18,
               opacity: 0.85,
-              boxShadow: '0 4px 16px rgba(27,63,160,0.10)',
+              boxShadow: '0 4px 16px rgba(22,45,110,0.10)',
             }}
           />
         </div>

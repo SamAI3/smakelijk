@@ -509,7 +509,7 @@ export default function InstellingenTab() {
                   background: jsonTekst.trim() ? 'var(--cobalt)' : 'rgba(26,26,46,0.08)',
                   color: jsonTekst.trim() ? '#fff' : 'var(--text-muted)',
                   fontSize: 14, fontWeight: 700,
-                  boxShadow: jsonTekst.trim() ? '0 3px 12px rgba(27,63,160,0.25)' : 'none',
+                  boxShadow: jsonTekst.trim() ? '0 3px 12px rgba(22,45,110,0.25)' : 'none',
                 }}
               >
                 <CheckCircle size={16} weight="duotone" />
@@ -546,7 +546,7 @@ export default function InstellingenTab() {
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '11px 14px', width: '100%', textAlign: 'left',
                       borderBottom: i < importRecepten.length - 1 ? '1px solid rgba(26,26,46,0.06)' : 'none',
-                      background: geselecteerd.has(i) ? 'rgba(27,63,160,0.05)' : 'transparent',
+                      background: geselecteerd.has(i) ? 'rgba(22,45,110,0.05)' : 'transparent',
                       transition: 'background 0.1s',
                     }}
                   >
@@ -582,7 +582,7 @@ export default function InstellingenTab() {
                   background: geselecteerd.size > 0 ? 'var(--cobalt)' : 'rgba(26,26,46,0.08)',
                   color: geselecteerd.size > 0 ? '#fff' : 'var(--text-muted)',
                   fontSize: 15, fontWeight: 700,
-                  boxShadow: geselecteerd.size > 0 ? '0 3px 12px rgba(27,63,160,0.25)' : 'none',
+                  boxShadow: geselecteerd.size > 0 ? '0 3px 12px rgba(22,45,110,0.25)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
@@ -668,7 +668,7 @@ function SettingsSection({ title, icon, children }: { title: string; icon?: Reac
         <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
           {title}
         </h3>
-        <div style={{ flex: 1, height: 1, background: 'rgba(27,63,160,0.12)', marginLeft: 4 }} />
+        <div style={{ flex: 1, height: 1, background: 'rgba(22,45,110,0.12)', marginLeft: 4 }} />
       </div>
       {children}
     </section>

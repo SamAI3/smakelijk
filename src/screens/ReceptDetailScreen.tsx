@@ -204,14 +204,14 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
           <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Porties:</span>
           <button
             onClick={() => setPorties(Math.max(1, porties - 1))}
-            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(27,63,160,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(22,45,110,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
           >
             <Minus size={14} weight="bold" />
           </button>
           <span style={{ fontWeight: 700, fontSize: 17, minWidth: 24, textAlign: 'center', color: 'var(--cobalt)' }}>{porties}</span>
           <button
             onClick={() => setPorties(porties + 1)}
-            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(27,63,160,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(22,45,110,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cobalt)' }}
           >
             <Plus size={14} weight="bold" />
           </button>

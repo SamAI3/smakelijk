@@ -23,7 +23,7 @@ export default function LoginScreen() {
             style={{
               width: 260, height: 200,
               borderRadius: 24,
-              boxShadow: '0 8px 32px rgba(27,63,160,0.13)',
+              boxShadow: '0 8px 32px rgba(22,45,110,0.13)',
             }}
           />
         </div>
