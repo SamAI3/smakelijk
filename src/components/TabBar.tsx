@@ -79,12 +79,17 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
     <nav
       className="tab-bar"
       style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
         display: 'flex',
         background: 'var(--card)',
         borderTop: '1px solid var(--border-light)',
         boxShadow: '0 -2px 16px rgba(26,26,46,0.07)',
         minHeight: 'var(--tab-height)',
-        flexShrink: 0,
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        zIndex: 100,
       }}
     >
       {tabs.map(({ id, label, Icon }) => {

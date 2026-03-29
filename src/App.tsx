@@ -102,7 +102,13 @@ function AppInner() {
           {activeTab === 'instellingen' && <InstellingenTab />}
         </div>
       </div>
-      {!isTablet && <TabBar activeTab={activeTab} onTabChange={setActiveTab} />}
+      {!isTablet && (
+        <>
+          {/* Spacer — reserveert ruimte voor de fixed tab bar */}
+          <div style={{ height: 'calc(var(--tab-height) + env(safe-area-inset-bottom, 0px))', flexShrink: 0 }} aria-hidden />
+          <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        </>
+      )}
     </>
   );
 }
