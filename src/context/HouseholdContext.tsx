@@ -22,6 +22,7 @@ interface HouseholdContextType {
   createHousehold: (naam: string) => Promise<void>;
   joinHousehold: (code: string) => Promise<boolean>;
   refreshHousehold: () => Promise<void>;
+  updateStandaardPorties: (n: number) => Promise<void>;
 }
 
 const HouseholdContext = createContext<HouseholdContextType | null>(null);
@@ -45,6 +46,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
           code: data.code,
           leden: data.leden,
           aangemaakt: data.aangemaakt?.toDate() ?? new Date(),
+          standaardPorties: data.standaardPorties ?? 4,
         });
       } else {
         setHousehold(null);
@@ -98,8 +100,14 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
     if (user) await loadHousehold(user.uid);
   };
 
+  const updateStandaardPorties = async (n: number) => {
+    if (!household) return;
+    await updateDoc(doc(db, 'households', household.id), { standaardPorties: n });
+    setHousehold((h) => h ? { ...h, standaardPorties: n } : h);
+  };
+
   return (
-    <HouseholdContext.Provider value={{ household, loading, createHousehold, joinHousehold, refreshHousehold }}>
+    <HouseholdContext.Provider value={{ household, loading, createHousehold, joinHousehold, refreshHousehold, updateStandaardPorties }}>
       {children}
     </HouseholdContext.Provider>
   );

@@ -41,6 +41,7 @@ export interface Household {
   code: string;
   leden: string[];
   aangemaakt: Date;
+  standaardPorties?: number;
 }
 
 export interface User {

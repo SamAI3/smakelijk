@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { SignOut, Copy, Check, UsersThree, Upload, FileText, X, UserCircle, CheckCircle } from '@phosphor-icons/react';
+import { SignOut, Copy, Check, UsersThree, Upload, FileText, X, UserCircle, CheckCircle, Minus, Plus, DownloadSimple } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useRecepten } from '../context/ReceptenContext';
@@ -250,7 +250,7 @@ function parseImportJson(tekst: string): ImportRecept[] | string {
 // ── Hoofd component ──────────────────────────────────────────────
 export default function InstellingenTab() {
   const { user, signOutUser } = useAuth();
-  const { household } = useHousehold();
+  const { household, updateStandaardPorties } = useHousehold();
   const { addRecept } = useRecepten();
   const [codeCopied, setCodeCopied] = useState(false);
 
@@ -465,6 +465,31 @@ export default function InstellingenTab() {
             <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>
               Deel de code met huisgenoten om samen recepten te beheren.
             </p>
+
+            {/* Standaard porties */}
+            <div style={{ background: 'var(--card)', borderRadius: 14, boxShadow: 'var(--shadow)', padding: '12px 14px', display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>Standaard porties</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Wordt gebruikt bij nieuwe recepten</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={() => updateStandaardPorties(Math.max(1, (household.standaardPorties ?? 4) - 1))}
+                  style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(26,26,46,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)' }}
+                >
+                  <Minus size={14} weight="bold" />
+                </button>
+                <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--cobalt)', minWidth: 24, textAlign: 'center' }}>
+                  {household.standaardPorties ?? 4}
+                </span>
+                <button
+                  onClick={() => updateStandaardPorties((household.standaardPorties ?? 4) + 1)}
+                  style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(26,26,46,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)' }}
+                >
+                  <Plus size={14} weight="bold" />
+                </button>
+              </div>
+            </div>
           </SettingsSection>
         )}
 

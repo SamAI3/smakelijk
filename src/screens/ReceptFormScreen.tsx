@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { ArrowLeft, Plus, Trash, Link, Camera, FileText, Spinner, MagicWand, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { Recept, Ingredient, Eenheid, ReceptType, Moeilijkheid } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
+import { useHousehold } from '../context/HouseholdContext';
 import {
   parseReceptFromUrl, parseReceptFromImages, parseIngredienten,
   splitStappen, compressImage, legeIngredient, leegRecept, bepaalMoeilijkheid,
@@ -28,9 +29,10 @@ const KEUKENS = [
 
 export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSaved }: Props) {
   const { addRecept, updateRecept } = useRecepten();
+  const { household } = useHousehold();
   const [activeTab, setActiveTab] = useState<FormTab>('handmatig');
   const [form, setForm] = useState<Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor'>>(
-    bestaandRecept ?? leegRecept()
+    bestaandRecept ?? { ...leegRecept(), porties: household?.standaardPorties ?? 4 }
   );
   const [saving, setSaving] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
