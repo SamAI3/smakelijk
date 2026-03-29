@@ -95,7 +95,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
       })
       .join('\n');
     const encoded = encodeURIComponent(regels);
-    window.location.href = `shortcuts://run-shortcut?name=Boodschappen&input=text&text=${encoded}`;
+    window.location.href = `shortcuts://x-callback-url/run-shortcut?name=Boodschappen&input=text&text=${encoded}&x-success=${encodeURIComponent('https://smakelijk.netlify.app')}`;
   };
 
   const handleClearAll = async () => {
