@@ -213,6 +213,7 @@ body::after {
   max-width: 480px;
   margin: 0 auto;
   position: relative;
+  background: var(--bg);
 }
 
 /* Tablet / iPad */
