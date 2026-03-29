@@ -123,7 +123,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
           </h2>
         </div>
 
-        <div style={{ padding: '16px 20px 32px' }}>
+        <div style={{ padding: '16px 20px 120px' }}>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
             Vink af wat je al hebt, exporteer de rest.
           </p>
