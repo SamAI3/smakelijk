@@ -32,8 +32,10 @@ export default function OnboardingScreen() {
     try {
       const ok = await joinHousehold(code.trim());
       if (!ok) setError('Code niet gevonden. Controleer en probeer opnieuw.');
-    } catch {
-      setError('Er ging iets mis. Probeer opnieuw.');
+    } catch (err) {
+      console.error('[handleJoin] fout:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Fout: ${msg}`);
     } finally {
       setLoading(false);
     }

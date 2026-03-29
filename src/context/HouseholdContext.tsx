@@ -78,8 +78,10 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
 
   const joinHousehold = async (code: string): Promise<boolean> => {
     if (!user) return false;
+    console.log('[joinHousehold] searching for code:', code.toUpperCase());
     const q = query(collection(db, 'households'), where('code', '==', code.toUpperCase()));
     const snap = await getDocs(q);
+    console.log('[joinHousehold] results:', snap.size);
     if (snap.empty) return false;
     const d = snap.docs[0];
     const current: string[] = d.data().leden ?? [];
