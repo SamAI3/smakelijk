@@ -251,8 +251,9 @@ function parseImportJson(tekst: string): ImportRecept[] | string {
 export default function InstellingenTab() {
   const { user, signOutUser } = useAuth();
   const { household, updateStandaardPorties } = useHousehold();
-  const { addRecept } = useRecepten();
+  const { addRecept, recepten } = useRecepten();
   const [codeCopied, setCodeCopied] = useState(false);
+  const [exportGekopeerd, setExportGekopeerd] = useState(false);
 
   // Import state
   type ImportStatus = 'idle' | 'preview' | 'importing' | 'done';
@@ -337,6 +338,15 @@ export default function InstellingenTab() {
     setImportError('');
     setImportSucces(0);
     setJsonTekst('');
+  };
+
+  const exporteerRecepten = async () => {
+    const exportData = recepten.map(({ titel, type, ingredienten, bereiding, keuken, moeilijkheid, bereidingstijd, porties, tags, notities, bronUrl }) => ({
+      titel, type, ingredienten, bereiding, keuken, moeilijkheid, bereidingstijd, porties, tags, notities, bronUrl,
+    }));
+    await navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
+    setExportGekopeerd(true);
+    setTimeout(() => setExportGekopeerd(false), 2000);
   };
 
   return (
@@ -699,6 +709,35 @@ export default function InstellingenTab() {
               </button>
             </div>
           )}
+        </SettingsSection>
+
+        {/* ── Exporteren ── */}
+        <SettingsSection title="Exporteren" icon={<DownloadSimple size={13} weight="duotone" />}>
+          <button
+            onClick={exporteerRecepten}
+            disabled={recepten.length === 0}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '13px 16px', borderRadius: 12,
+              background: exportGekopeerd ? 'var(--olive)' : 'var(--card)',
+              boxShadow: 'var(--shadow)',
+              color: exportGekopeerd ? '#fff' : 'var(--text)',
+              fontSize: 14, fontWeight: 600,
+              width: '100%', textAlign: 'left',
+              transition: 'background 0.2s, color 0.2s',
+              opacity: recepten.length === 0 ? 0.5 : 1,
+            }}
+          >
+            {exportGekopeerd
+              ? <Check size={18} weight="bold" />
+              : <DownloadSimple size={18} color="var(--cobalt)" />}
+            {exportGekopeerd
+              ? 'Gekopieerd!'
+              : `Exporteer ${recepten.length} recept${recepten.length !== 1 ? 'en' : ''} als JSON`}
+          </button>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>
+            Kopieer alle recepten naar het klembord als JSON.
+          </p>
         </SettingsSection>
 
         {/* Over */}
