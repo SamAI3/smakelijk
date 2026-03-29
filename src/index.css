@@ -185,21 +185,18 @@
 ══════════════════════════════════════ */
 
 html {
-  /* height: 100% is de basis voor de hoogte-ketting body → #root */
   height: 100%;
-  /* Hardcoded tab bar kleur — iOS vult home indicator zone met html background */
-  background: #FFFDF7;
+  background: #FFFDF7;  /* tab bar kleur — iOS home indicator zone */
 }
 
 body {
   height: 100%;
-  background: var(--bg);
+  background: #FFFDF7;  /* zelfde als html + tab bar — geen strook mogelijk */
   color: var(--text);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  /* overflow: hidden voorkomt body-level scroll; screens scrollen intern */
   overflow: hidden;
 }
 
@@ -215,14 +212,14 @@ body::after {
 }
 
 #root {
-  height: 100%;         /* fallback: 100% van body (= 100% van html = viewport) */
-  height: 100dvh;       /* override: direct viewport height, beter op iOS PWA */
+  height: 100vh;        /* fallback */
+  height: 100dvh;       /* dynamic viewport height — beter op iOS PWA */
   display: flex;
   flex-direction: column;
   max-width: 480px;
   margin: 0 auto;
   position: relative;
-  background: var(--bg);
+  background: #FFFDF7;  /* zelfde als html + body + tab bar */
 }
 
 /* Tablet / iPad */
