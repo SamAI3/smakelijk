@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   ArrowLeft, Heart, CalendarPlus, PencilSimple, Trash,
-  Minus, Plus, CornersOut, CaretRight, Basket, ListNumbers,
+  Minus, Plus, CornersOut, CaretRight, Basket, ListNumbers, X,
 } from '@phosphor-icons/react';
 import { Recept } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
@@ -21,6 +21,8 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
   const [kookModus, setKookModus] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [toegevoegd, setToegevoegd] = useState(false);
+  const [afgevinktIngredienten, setAfgevinktIngredienten] = useState<Set<number>>(new Set());
+  const [actieveStap, setActieveStap] = useState<number | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const breedte = useWindowWidth();
   const isTablet = breedte >= TABLET;
@@ -59,97 +61,181 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
     return scaled.toFixed(1).replace('.0', '');
   };
 
-  // ── Kookmodus ──────────────────────────────────────────────
+  const toggleIngredient = (i: number) => {
+    setAfgevinktIngredienten((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i); else next.add(i);
+      return next;
+    });
+  };
+
+  // ── Kookmodus — licht kookboek-design ───────────────────────
   if (kookModus) {
+    const isWide = isTablet;
+    const padH = isWide ? 40 : 20;
+    const padV = isWide ? 28 : 20;
+
     return (
       <div style={{
-        position: 'fixed', inset: 0, background: '#1A1815', color: '#FAF6F0',
-        overflowY: isTablet ? 'hidden' : 'auto', zIndex: 100,
+        position: 'fixed', inset: 0,
+        background: '#FAF7F0',
+        color: 'var(--ink)',
+        zIndex: 100,
         display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
       }}>
-        {/* Kookmodus header */}
-        <div style={{ padding: '20px 28px 16px', flexShrink: 0 }}>
+        {/* Subtiele illustratie achtergrond */}
+        <DinerIllustration
+          section="full"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            opacity: 0.03,
+            mixBlendMode: 'multiply',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+
+        {/* Header */}
+        <div style={{
+          position: 'relative', zIndex: 1, flexShrink: 0,
+          padding: `${padV}px ${padH}px 16px`,
+          display: 'flex', alignItems: 'flex-start', gap: 16,
+          borderBottom: '1px solid rgba(26,26,46,0.08)',
+          background: 'rgba(250,247,240,0.96)',
+          backdropFilter: 'blur(8px)',
+        }}>
+          <div style={{ flex: 1 }}>
+            <h1 style={{
+              fontFamily: 'var(--font-title)',
+              fontSize: isWide ? 28 : 22,
+              fontWeight: 700,
+              color: 'var(--ink)',
+              lineHeight: 1.2,
+              marginBottom: 6,
+            }}>
+              {recept.titel}
+            </h1>
+            <div style={{ display: 'flex', gap: 16, fontSize: 13, color: 'var(--text-secondary)' }}>
+              <span>{porties} {porties === 1 ? 'portie' : 'porties'}</span>
+              {recept.bereidingstijd > 0 && (
+                <span>{recept.bereidingstijd} min</span>
+              )}
+            </div>
+          </div>
           <button
             onClick={() => setKookModus(false)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A09A93', fontSize: 14, marginBottom: 12 }}
+            style={{
+              width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(22,45,110,0.08)', color: 'var(--cobalt)',
+            }}
           >
-            <ArrowLeft size={18} /> Afsluiten
+            <X size={22} weight="bold" />
           </button>
-          <h1 style={{ fontFamily: 'var(--font-title)', fontSize: isTablet ? 36 : 26 }}>
-            {recept.titel}
-          </h1>
-          {porties !== recept.porties && (
-            <p style={{ fontSize: 13, color: '#A09A93', marginTop: 4 }}>{porties} porties</p>
-          )}
         </div>
 
-        {/* Inhoud: side-by-side op tablet, stacked op mobiel */}
+        {/* Content — 2 kolommen op tablet/desktop */}
         <div style={{
+          position: 'relative', zIndex: 1,
           flex: 1, overflow: 'hidden',
           display: 'flex',
-          flexDirection: isTablet ? 'row' : 'column',
-          gap: 0,
+          flexDirection: isWide ? 'row' : 'column',
+          maxWidth: isWide ? 900 : undefined,
+          margin: isWide ? '0 auto' : undefined,
+          width: '100%',
         }}>
-          {/* Ingrediënten */}
+          {/* ── Ingrediënten ── */}
           {recept.ingredienten.length > 0 && (
             <div style={{
-              width: isTablet ? 300 : '100%',
+              width: isWide ? 300 : '100%',
               flexShrink: 0,
               overflowY: 'auto',
-              padding: isTablet ? '0 20px 40px 28px' : '0 20px 16px',
-              borderRight: isTablet ? '1px solid rgba(255,255,255,0.08)' : 'none',
-              borderBottom: isTablet ? 'none' : '1px solid rgba(255,255,255,0.08)',
+              padding: isWide ? '24px 24px 48px 32px' : '16px 20px 8px',
+              borderRight: isWide ? '1px solid rgba(26,26,46,0.08)' : 'none',
+              borderBottom: !isWide ? '1px solid rgba(26,26,46,0.08)' : 'none',
+              maxHeight: !isWide ? '42vh' : undefined,
             }}>
-              <h2 style={{
-                fontFamily: 'var(--font-title)', fontSize: isTablet ? 20 : 16,
-                color: 'var(--accent3)', marginBottom: 12,
-              }}>
-                Ingrediënten
-              </h2>
-              {recept.ingredienten.map((ing, i) => (
-                <div key={i} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-                  padding: '7px 0',
-                  borderBottom: i < recept.ingredienten.length - 1
-                    ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                  gap: 10,
-                }}>
-                  <span style={{ fontSize: isTablet ? 17 : 15, color: '#E8E4DE' }}>{ing.naam}</span>
-                  <span style={{ fontSize: isTablet ? 16 : 14, fontWeight: 600, color: 'var(--accent3)', flexShrink: 0 }}>
-                    {ing.hoeveelheid > 0 ? `${formatHoeveelheid(ing.hoeveelheid)} ${ing.eenheid}` : ing.eenheid}
-                  </span>
-                </div>
-              ))}
+              <KookSectieHeader icon={<Basket size={12} />} titel="Ingrediënten" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {recept.ingredienten.map((ing, i) => {
+                  const isAf = afgevinktIngredienten.has(i);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => toggleIngredient(i)}
+                      style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '8px 10px', borderRadius: 8, width: '100%', textAlign: 'left',
+                        background: isAf ? 'transparent' : 'rgba(22,45,110,0.03)',
+                        opacity: isAf ? 0.35 : 1,
+                        transition: 'opacity 0.18s, background 0.15s',
+                        gap: 10,
+                      }}
+                    >
+                      <span style={{
+                        fontSize: isWide ? 15 : 14, color: 'var(--ink)',
+                        textDecoration: isAf ? 'line-through' : 'none',
+                        flex: 1,
+                      }}>
+                        {ing.naam}
+                      </span>
+                      {ing.hoeveelheid > 0 && (
+                        <span style={{
+                          fontSize: isWide ? 14 : 13, fontWeight: 600,
+                          color: 'var(--cobalt)', flexShrink: 0,
+                          textDecoration: isAf ? 'line-through' : 'none',
+                        }}>
+                          {formatHoeveelheid(ing.hoeveelheid)} {ing.eenheid}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
-          {/* Bereiding */}
+          {/* ── Bereiding ── */}
           <div style={{
             flex: 1, overflowY: 'auto',
-            padding: isTablet ? '0 28px 40px 24px' : '16px 20px 48px',
+            padding: isWide ? '24px 32px 48px 24px' : '16px 20px 56px',
           }}>
-            <h2 style={{
-              fontFamily: 'var(--font-title)', fontSize: isTablet ? 20 : 16,
-              color: 'var(--accent4)', marginBottom: 16,
-            }}>
-              Bereiding
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: isTablet ? 28 : 20 }}>
-              {recept.bereiding.map((stap, i) => (
-                <div key={i} style={{ display: 'flex', gap: 16 }}>
-                  <div style={{
-                    flexShrink: 0, width: isTablet ? 40 : 32, height: isTablet ? 40 : 32,
-                    borderRadius: 10, background: 'var(--cobalt)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isTablet ? 16 : 14, fontWeight: 700, color: '#fff',
-                  }}>
-                    {i + 1}
-                  </div>
-                  <p style={{ fontSize: isTablet ? 20 : 18, lineHeight: 1.65, color: '#FAF6F0', marginTop: 4 }}>
-                    {stap}
-                  </p>
-                </div>
-              ))}
+            <KookSectieHeader icon={<ListNumbers size={12} />} titel="Bereiding" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isWide ? 16 : 12 }}>
+              {recept.bereiding.map((stap, i) => {
+                const isActief = actieveStap === i;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setActieveStap(isActief ? null : i)}
+                    style={{
+                      display: 'flex', gap: 14, alignItems: 'flex-start',
+                      padding: '12px 10px', borderRadius: 10, width: '100%', textAlign: 'left',
+                      background: isActief ? 'rgba(22,45,110,0.06)' : 'transparent',
+                      transition: 'background 0.15s',
+                    }}
+                  >
+                    <div style={{
+                      flexShrink: 0, width: 26, height: 26, borderRadius: 8, marginTop: 2,
+                      background: isActief ? 'var(--cobalt)' : 'rgba(22,45,110,0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 700,
+                      color: isActief ? '#fff' : 'var(--cobalt)',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}>
+                      {i + 1}
+                    </div>
+                    <p style={{
+                      fontSize: isWide ? 17 : 16, lineHeight: 1.65,
+                      color: 'var(--ink)', flex: 1,
+                    }}>
+                      {stap}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -378,6 +464,21 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function KookSectieHeader({ icon, titel }: { icon: React.ReactNode; titel: string }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 6,
+      marginBottom: 14, color: 'var(--cobalt)',
+    }}>
+      {icon}
+      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
+        {titel}
+      </span>
+      <div style={{ flex: 1, height: 1, background: 'rgba(22,45,110,0.12)', marginLeft: 4 }} />
     </div>
   );
 }
