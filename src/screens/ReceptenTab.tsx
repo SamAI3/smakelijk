@@ -6,6 +6,7 @@ import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
 import { BestekDecoratie } from '../components/Illustrations';
+import DinerIllustration from '../components/DinerIllustration';
 
 const KEUKEN_EMOJI: Record<string, string> = {
   'Italiaans': '🍝',
@@ -118,10 +119,31 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
           lineHeight: 1.0,
           color: 'var(--ink)',
           letterSpacing: '-0.5px',
-          marginBottom: 16,
+          marginBottom: 14,
         }}>
           Recepten
         </h1>
+
+        {/* Hero banner — diner illustratie */}
+        <div style={{
+          borderRadius: 16,
+          overflow: 'hidden',
+          height: isTablet ? 160 : 120,
+          marginBottom: 16,
+          position: 'relative',
+        }}>
+          <DinerIllustration
+            section="full"
+            style={{ width: '100%', height: '100%', objectPosition: 'center 30%' }}
+            loading="eager"
+          />
+          {/* Gradient overlay onderaan zodat de toggle goed leesbaar is */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to bottom, transparent 40%, var(--bg) 100%)',
+            pointerEvents: 'none',
+          }} />
+        </div>
 
         {/* Toggle Hoofdgerechten / Overig */}
         <div style={{
@@ -359,6 +381,18 @@ function FeaturedReceptCard({ recept, onClick, index = 0 }: { recept: Recept; on
         position: 'absolute', inset: 0, borderRadius: 16,
         background: getKeukenTint(recept.keuken), pointerEvents: 'none',
       }} />
+      {/* Diner illustratie — rechtsonder, subtiel */}
+      <DinerIllustration
+        section="wine"
+        style={{
+          position: 'absolute', right: 0, bottom: 0,
+          width: 120, height: 120,
+          opacity: 0.07,
+          mixBlendMode: 'multiply',
+          borderRadius: '0 0 16px 0',
+          pointerEvents: 'none',
+        }}
+      />
       <div style={{ position: 'relative' }}>
         <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
           <MoeilijkheidBadge moeilijkheid={recept.moeilijkheid} />

@@ -6,6 +6,7 @@ import { useRecepten } from '../context/ReceptenContext';
 import { Recept, ReceptType, Moeilijkheid } from '../types';
 import { bepaalMoeilijkheid } from '../services/ai';
 import { CookbookIllustration } from '../components/illustrations/Decorations';
+import DinerIllustration from '../components/DinerIllustration';
 
 // ── JSON import types ────────────────────────────────────────────
 type ImportRecept = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
@@ -340,10 +341,19 @@ export default function InstellingenTab() {
 
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
-      <div style={{ padding: '20px 20px 8px' }}>
-        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.0, letterSpacing: '-0.5px' }}>
+      <div style={{ padding: '20px 20px 8px', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.0, letterSpacing: '-0.5px', flex: 1 }}>
           Instellingen
         </h1>
+        <DinerIllustration
+          section="cheese"
+          style={{
+            width: 72, height: 72,
+            borderRadius: 14,
+            opacity: 0.75,
+            flexShrink: 0,
+          }}
+        />
       </div>
 
       <div style={{ padding: '8px 20px 48px', display: 'flex', flexDirection: 'column', gap: 16 }}>

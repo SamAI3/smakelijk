@@ -7,6 +7,7 @@ import { Recept } from '../types';
 import { useRecepten } from '../context/ReceptenContext';
 import { useWindowWidth, TABLET } from '../hooks/useWindowWidth';
 import { IngredientsDivider } from '../components/illustrations/Decorations';
+import DinerIllustration from '../components/DinerIllustration';
 
 interface Props {
   recept: Recept;
@@ -160,7 +161,18 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--card)', padding: '16px 20px 20px', boxShadow: 'var(--shadow)' }}>
+      <div style={{ background: 'var(--card)', padding: '16px 20px 20px', boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden' }}>
+        {/* Subtiele illustratie achtergrond */}
+        <DinerIllustration
+          section="olive"
+          style={{
+            position: 'absolute', top: 0, right: 0,
+            width: 180, height: '100%',
+            opacity: 0.04,
+            mixBlendMode: 'multiply',
+            pointerEvents: 'none',
+          }}
+        />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <button onClick={onBack} style={{ color: 'var(--text)', display: 'flex' }}>
             <ArrowLeft size={22} />

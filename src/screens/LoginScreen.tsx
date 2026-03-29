@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { LoginTafelIllustration } from '../components/illustrations/HeroIllustration';
+import DinerIllustration from '../components/DinerIllustration';
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -16,8 +16,16 @@ export default function LoginScreen() {
       background: 'var(--bg)',
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <LoginTafelIllustration width={240} />
+        <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <DinerIllustration
+            section="full"
+            loading="eager"
+            style={{
+              width: 260, height: 200,
+              borderRadius: 24,
+              boxShadow: '0 8px 32px rgba(27,63,160,0.13)',
+            }}
+          />
         </div>
         <h1 style={{
           fontFamily: 'var(--font-title)',

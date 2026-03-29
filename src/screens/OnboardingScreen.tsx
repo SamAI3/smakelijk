@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useHousehold } from '../context/HouseholdContext';
+import DinerIllustration from '../components/DinerIllustration';
 
 export default function OnboardingScreen() {
   const { createHousehold, joinHousehold } = useHousehold();
@@ -52,7 +53,18 @@ export default function OnboardingScreen() {
       gap: 24,
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>🏠</div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <DinerIllustration
+            section="cheese"
+            loading="eager"
+            style={{
+              width: 140, height: 100,
+              borderRadius: 18,
+              opacity: 0.85,
+              boxShadow: '0 4px 16px rgba(27,63,160,0.10)',
+            }}
+          />
+        </div>
         <h2 style={{ fontFamily: 'var(--font-title)', fontSize: 28, marginBottom: 8 }}>
           Jouw huishouden
         </h2>

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Trash, Minus, Plus, ShoppingCart, X, Check, CookingPot } from '@phosphor-icons/react';
+import DinerIllustration from '../components/DinerIllustration';
 import { useRecepten } from '../context/ReceptenContext';
 import { Ingredient } from '../types';
 const KEUKEN_EMOJI: Record<string, string> = {
@@ -186,7 +187,14 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
         {weekRecepten.length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
             <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <CookingPot size={64} weight="duotone" color="var(--amber)" />
+              <DinerIllustration
+                section="candle"
+                style={{
+                  width: 280, height: 180,
+                  borderRadius: 20,
+                  opacity: 0.7,
+                }}
+              />
             </div>
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
               Nog geen recepten gepland.
