@@ -427,11 +427,39 @@ export default function InstellingenTab() {
                   {codeCopied ? <Check size={16} weight="bold" /> : <Copy size={16} />}
                 </button>
               </div>
-              <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <UsersThree size={16} color="var(--text-muted)" />
-                <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-                  {household.leden.length} lid{household.leden.length !== 1 ? 'en' : ''}
-                </span>
+              <div style={{ padding: '12px 14px' }}>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                  {household.leden.length} {household.leden.length !== 1 ? 'leden' : 'lid'}
+                </div>
+                {household.leden.map((uid, idx) => {
+                  const isZelf = uid === user?.uid;
+                  const naam = isZelf ? (user?.displayName ?? 'Jij') : 'Huisgenoot';
+                  const email = isZelf ? (user?.email ?? null) : null;
+                  return (
+                    <div key={uid} style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      ...(idx < household.leden.length - 1 ? { marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid rgba(26,26,46,0.06)' } : {}),
+                    }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                        background: isZelf ? 'var(--cobalt)' : 'rgba(26,26,46,0.10)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: isZelf ? '#fff' : 'var(--text-secondary)', fontSize: 15, fontWeight: 700,
+                      }}>
+                        {naam[0]?.toUpperCase() ?? '?'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{naam}</div>
+                        {email && <div style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>}
+                      </div>
+                      {isZelf && (
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--olive)', background: 'rgba(74,124,89,0.10)', padding: '2px 8px', borderRadius: 6, flexShrink: 0 }}>
+                          jij
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>
