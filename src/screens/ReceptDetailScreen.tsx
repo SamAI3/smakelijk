@@ -100,7 +100,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
         {/* Header */}
         <div style={{
           position: 'relative', zIndex: 1, flexShrink: 0,
-          padding: `${padV}px ${padH}px 16px`,
+          padding: `calc(env(safe-area-inset-top, ${padV}px) + 8px) ${padH}px 16px`,
           display: 'flex', alignItems: 'flex-start', gap: 16,
           borderBottom: '1px solid rgba(26,26,46,0.08)',
           background: 'rgba(250,247,240,0.96)',
@@ -139,7 +139,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
         {/* Content — 2 kolommen op tablet/desktop */}
         <div style={{
           position: 'relative', zIndex: 1,
-          flex: 1, overflow: 'hidden',
+          flex: 1, overflow: 'hidden', minHeight: 0,
           display: 'flex',
           flexDirection: isWide ? 'row' : 'column',
           maxWidth: isWide ? 900 : undefined,
@@ -247,7 +247,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--card)', padding: '16px 20px 20px', boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--card)', padding: 'calc(env(safe-area-inset-top, 20px) + 8px) 20px 20px', boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden' }}>
         {/* Subtiele illustratie achtergrond */}
         <DinerIllustration
           section="olive"
