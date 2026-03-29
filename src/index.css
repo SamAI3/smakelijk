@@ -185,17 +185,14 @@
 ══════════════════════════════════════ */
 
 html {
-  /* Achtergrond matcht de tab bar — zichtbaar in de iOS home indicator zone */
-  background: var(--card);
-  height: 100%;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  /* Hardcoded tab bar kleur — iOS vult home indicator zone met html background */
+  background: #FFFDF7;
 }
 
 body {
   height: 100%;
   min-height: 100vh;
-  min-height: -webkit-fill-available;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -217,8 +214,8 @@ body::after {
 }
 
 #root {
-  height: 100%;        /* fallback */
-  height: 100dvh;      /* moderne override — vult exact de volledige viewport incl. safe areas */
+  min-height: 100vh;   /* fallback */
+  min-height: 100dvh;  /* dynamic viewport height — werkt beter op iOS dan vh */
   display: flex;
   flex-direction: column;
   max-width: 480px;

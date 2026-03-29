@@ -105,7 +105,7 @@ function AppInner() {
       {!isTablet && (
         <>
           {/* Spacer — reserveert ruimte voor de fixed tab bar, zelfde kleur om stripe te voorkomen */}
-          <div style={{ height: 'calc(var(--tab-height) + env(safe-area-inset-bottom, 0px))', flexShrink: 0, background: 'var(--card)' }} aria-hidden />
+          <div style={{ height: 'calc(var(--tab-height) + env(safe-area-inset-bottom, 0px))', flexShrink: 0, background: '#FFFDF7' }} aria-hidden />
           <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
         </>
       )}

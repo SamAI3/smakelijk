@@ -84,7 +84,7 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
         left: 0,
         right: 0,
         display: 'flex',
-        background: 'var(--card)',
+        background: '#FFFDF7',  /* hardcoded — matcht manifest background_color en html background */
         borderTop: '1px solid var(--border-light)',
         boxShadow: '0 -2px 16px rgba(26,26,46,0.07)',
         minHeight: 'var(--tab-height)',

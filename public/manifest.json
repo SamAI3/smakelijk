@@ -3,7 +3,7 @@
   "short_name": "Smakelijk",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAF6F0",
+  "background_color": "#FFFDF7",
   "theme_color": "#C4653A",
   "icons": [
     {
