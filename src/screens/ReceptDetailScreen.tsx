@@ -48,6 +48,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
   const handleAddToWeek = async () => {
     await addToWeekkeuze(recept.id, porties);
     setToegevoegd(true);
+    // TODO: cleanup timer bij unmount om state-update op unmounted component te voorkomen
     setTimeout(() => setToegevoegd(false), 2000);
   };
 
@@ -79,7 +80,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
     return (
       <div style={{
         position: 'fixed', inset: 0,
-        background: '#FAF7F0',
+        background: '#FAF7F0', /* TODO: zet als CSS variabele --kookmodus-bg */
         color: 'var(--ink)',
         zIndex: 100,
         display: 'flex', flexDirection: 'column',
@@ -127,6 +128,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
           </div>
           <button
             onClick={() => setKookModus(false)}
+            aria-label="Kookmodus sluiten"
             style={{
               width: 44, height: 44, borderRadius: 12, flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -264,17 +266,17 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
           }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <button onClick={onBack} style={{ color: 'var(--text)', display: 'flex' }}>
+          <button onClick={onBack} aria-label="Terug" style={{ color: 'var(--text)', display: 'flex' }}>
             <ArrowLeft size={22} />
           </button>
           <div style={{ flex: 1 }} />
-          <button onClick={toggleFavoriet} style={{ display: 'flex', color: recept.favoriet ? 'var(--amber)' : '#C0BAB3' }}>
+          <button onClick={toggleFavoriet} aria-label={recept.favoriet ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'} style={{ display: 'flex', color: recept.favoriet ? 'var(--amber)' : '#C0BAB3' }}>
             <Heart size={22} weight={recept.favoriet ? 'fill' : 'regular'} />
           </button>
-          <button onClick={() => onEdit(recept)} style={{ display: 'flex', color: 'var(--text-secondary)' }}>
+          <button onClick={() => onEdit(recept)} aria-label="Bewerk recept" style={{ display: 'flex', color: 'var(--text-secondary)' }}>
             <PencilSimple size={20} />
           </button>
-          <button onClick={() => setConfirmDelete(true)} style={{ display: 'flex', color: 'var(--crimson)' }}>
+          <button onClick={() => setConfirmDelete(true)} aria-label="Verwijder recept" style={{ display: 'flex', color: 'var(--crimson)' }}>
             <Trash size={20} />
           </button>
         </div>
@@ -413,7 +415,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
               </h2>
               <div style={{
                 background: 'var(--card)', borderRadius: 14, padding: '14px',
-                boxShadow: 'var(--shadow)', fontSize: 14, lineHeight: 1.6, color: '#5A554F',
+                boxShadow: 'var(--shadow)', fontSize: 14, lineHeight: 1.6, color: 'var(--text-secondary)',
               }}>
                 {recept.notities}
               </div>

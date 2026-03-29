@@ -77,7 +77,7 @@ export default function TabBar({ activeTab, onTabChange, vertical = false }: Tab
 
   return (
     <nav
-      className="tab-bar"
+      className="tab-bar" /* TODO: .tab-bar bestaat niet in index.css — verwijder of voeg stijlen toe */
       style={{
         position: 'fixed',
         bottom: 0,

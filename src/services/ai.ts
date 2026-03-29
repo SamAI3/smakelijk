@@ -58,15 +58,6 @@ export async function parseReceptFromUrl(url: string): Promise<ReceptData | null
   }
 }
 
-export async function parseReceptFromImage(base64: string, mimeType: string): Promise<ReceptData | null> {
-  try {
-    const text = await callAiFunction({ type: 'image', base64, mimeType });
-    return text ? parseJSON<ReceptData>(text) : null;
-  } catch (err) {
-    console.error('AI image parse error:', err);
-    return null;
-  }
-}
 
 export async function parseReceptFromImages(
   images: { base64: string; mimeType: string }[]

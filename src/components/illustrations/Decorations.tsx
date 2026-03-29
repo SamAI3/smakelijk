@@ -144,26 +144,3 @@ export function IngredientsDivider({ width = 280, className, style }: Props) {
   );
 }
 
-/** Subtiele achtergrond-watermark voor receptkaarten (positioneer absoluut rechtsonder) */
-export function CardWatermark({ width = 56, className, style }: Props) {
-  return (
-    <svg
-      viewBox="0 0 56 56"
-      width={width}
-      height={width}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      style={style}
-      aria-hidden
-    >
-      {/* Gestileerde vork — subtiele watermark */}
-      <line x1="22" y1="6" x2="22" y2="50" stroke="currentColor" strokeOpacity="0.06" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="16" y1="6" x2="16" y2="18" stroke="currentColor" strokeOpacity="0.05" strokeWidth="2.2" strokeLinecap="round"/>
-      <line x1="28" y1="6" x2="28" y2="18" stroke="currentColor" strokeOpacity="0.05" strokeWidth="2.2" strokeLinecap="round"/>
-      {/* Bord */}
-      <circle cx="38" cy="36" r="14" stroke="currentColor" strokeOpacity="0.05" strokeWidth="2.5"/>
-      <circle cx="38" cy="36" r="9" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1.5"/>
-    </svg>
-  );
-}

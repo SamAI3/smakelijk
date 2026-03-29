@@ -68,7 +68,7 @@ export default function OnboardingScreen() {
         <h2 style={{ fontFamily: 'var(--font-title)', fontSize: 28, marginBottom: 8 }}>
           Jouw huishouden
         </h2>
-        <p style={{ color: '#7A7570', fontSize: 14 }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
           Recepten deel je met je huishouden.
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function OnboardingScreen() {
               fontSize: 14,
               fontWeight: 500,
               background: tab === t ? 'var(--card)' : 'transparent',
-              color: tab === t ? 'var(--text)' : '#7A7570',
+              color: tab === t ? 'var(--text)' : 'var(--text-muted)',
               boxShadow: tab === t ? 'var(--shadow)' : 'none',
               transition: 'all 0.15s',
             }}
@@ -133,7 +133,7 @@ export default function OnboardingScreen() {
             </button>
           </>
         )}
-        {error && <p style={{ color: 'var(--accent1)', fontSize: 13, textAlign: 'center' }}>{error}</p>}
+        {error && <p style={{ color: 'var(--crimson)', fontSize: 13, textAlign: 'center' }}>{error}</p>}
       </div>
     </div>
   );

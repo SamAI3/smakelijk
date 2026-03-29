@@ -115,7 +115,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
           display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: 'var(--shadow)', position: 'sticky', top: 0, zIndex: 10,
         }}>
-          <button onClick={() => setBoodschappenModus(false)} style={{ color: '#fff', display: 'flex' }}>
+          <button onClick={() => setBoodschappenModus(false)} aria-label="Sluiten" style={{ color: '#fff', display: 'flex' }}>
             <X size={22} weight="bold" />
           </button>
           <h2 style={{ fontFamily: 'var(--font-title)', fontSize: 22, fontWeight: 700, flex: 1, color: '#fff' }}>

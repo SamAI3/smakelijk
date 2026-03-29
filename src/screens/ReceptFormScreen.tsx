@@ -69,6 +69,8 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
         const id = await addRecept(form);
         onSaved(id);
       }
+    } catch {
+      // TODO: toon foutmelding aan gebruiker bij mislukte opslag
     } finally {
       setSaving(false);
     }
@@ -170,7 +172,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
         display: 'flex', alignItems: 'center', gap: 12,
         boxShadow: 'var(--shadow)', position: 'sticky', top: 0, zIndex: 10,
       }}>
-        <button onClick={onBack} style={{ color: 'var(--text)', display: 'flex' }}>
+        <button onClick={onBack} aria-label="Terug" style={{ color: 'var(--text)', display: 'flex' }}>
           <ArrowLeft size={22} />
         </button>
         <h2 style={{ fontFamily: 'var(--font-title)', fontSize: 22, flex: 1 }}>
@@ -283,7 +285,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                 ? `${fotoFiles.length} foto${fotoFiles.length > 1 ? "'s" : ''} geselecteerd`
                 : "Foto's kiezen of maken"}
             </span>
-            <span style={{ fontSize: 12, color: '#B0AAA3' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
               {fotoFiles.length > 0 ? 'Tik om foto\'s te wijzigen' : 'Meerdere selectie mogelijk'}
             </span>
           </button>
@@ -291,6 +293,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
           {/* Thumbnails */}
           {fotoFiles.length > 0 && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {/* TODO: URL.createObjectURL leakt geheugen — vervang door useEffect + useState<string[]> met cleanup */}
               {fotoFiles.map((file, i) => (
                 <div key={i} style={{ position: 'relative' }}>
                   <img
@@ -300,6 +303,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
                   />
                   <button
                     onClick={() => setFotoFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                    aria-label={`Foto ${i + 1} verwijderen`}
                     style={{
                       position: 'absolute', top: -6, right: -6,
                       width: 20, height: 20, borderRadius: '50%',
