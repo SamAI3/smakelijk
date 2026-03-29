@@ -13,12 +13,13 @@ interface Props {
   recept: Recept;
   onBack: () => void;
   onEdit: (recept: Recept) => void;
+  kookModusInitieel?: boolean;
 }
 
-export default function ReceptDetailScreen({ recept, onBack, onEdit }: Props) {
+export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusInitieel }: Props) {
   const { updateRecept, deleteRecept, addToWeekkeuze, weekkeuze } = useRecepten();
   const [porties, setPorties] = useState(recept.porties);
-  const [kookModus, setKookModus] = useState(false);
+  const [kookModus, setKookModus] = useState(kookModusInitieel ?? false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [toegevoegd, setToegevoegd] = useState(false);
   const [afgevinktIngredienten, setAfgevinktIngredienten] = useState<Set<number>>(new Set());

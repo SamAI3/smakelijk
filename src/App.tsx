@@ -17,7 +17,7 @@ import { Recept } from './types';
 type Tab = 'recepten' | 'weekkeuze' | 'instellingen';
 type Screen =
   | { type: 'tabs' }
-  | { type: 'detail'; recept: Recept }
+  | { type: 'detail'; recept: Recept; kookModus?: boolean }
   | { type: 'form'; recept?: Recept };
 
 function AppInner() {
@@ -56,6 +56,7 @@ function AppInner() {
     return (
       <ReceptDetailScreen
         recept={screen.recept}
+        kookModusInitieel={screen.kookModus}
         onBack={() => setScreen({ type: 'tabs' })}
         onEdit={(r) => setScreen({ type: 'form', recept: r })}
       />
@@ -97,7 +98,10 @@ function AppInner() {
             />
           )}
           {activeTab === 'weekkeuze' && (
-            <WeekkeuzeTab onGaNaarRecepten={() => setActiveTab('recepten')} />
+            <WeekkeuzeTab
+              onGaNaarRecepten={() => setActiveTab('recepten')}
+              onStartKoken={(r) => setScreen({ type: 'detail', recept: r, kookModus: true })}
+            />
           )}
           {activeTab === 'instellingen' && <InstellingenTab />}
         </div>
