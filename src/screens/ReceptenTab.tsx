@@ -110,88 +110,96 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
 
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <div style={{ padding: isTablet ? '28px 32px 16px' : '20px 20px 12px', flexShrink: 0 }}>
-        <h1 style={{
-          fontFamily: 'var(--font-title)',
-          fontSize: isTablet ? 52 : 44,
-          fontWeight: 900,
-          lineHeight: 1.0,
-          color: 'var(--ink)',
-          letterSpacing: '-0.5px',
-          marginBottom: 14,
-        }}>
-          Recepten
-        </h1>
-
-        {/* Hero banner — diner illustratie */}
+      {/* Immersive hero — illustratie met overlappende filters */}
+      <div style={{ position: 'relative', marginBottom: 16, flexShrink: 0 }}>
+        {/* Full-bleed illustratie */}
         <div style={{
-          borderRadius: 16,
-          overflow: 'hidden',
-          height: isTablet ? 160 : 120,
-          marginBottom: 16,
           position: 'relative',
+          height: isTablet ? 260 : 200,
+          overflow: 'hidden',
+          borderRadius: '0 0 20px 20px',
         }}>
           <DinerIllustration
             section="full"
-            style={{ width: '100%', height: '100%', objectPosition: 'center 85%' }}
+            style={{ width: '100%', height: '100%', objectPosition: 'center 70%' }}
             loading="eager"
           />
-          {/* Gradient overlay onderaan zodat de toggle goed leesbaar is */}
+          {/* Gradient: subtiel bovenaan (safe-area), sterker onderaan voor leesbaarheid filters */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(to bottom, transparent 40%, var(--bg) 100%)',
+            background: 'linear-gradient(to bottom, rgba(245,240,232,0.15) 0%, transparent 30%, rgba(245,240,232,0.55) 70%, rgba(245,240,232,0.90) 100%)',
             pointerEvents: 'none',
           }} />
-        </div>
 
-        {/* Toggle Hoofdgerechten / Overig */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(26,26,46,0.06)',
-          borderRadius: 12, padding: 4, marginBottom: 10,
-        }}>
-          {(['hoofdgerecht', 'overig'] as ReceptType[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => { setTypeFilter(t); setGeselecteerdeKeuken(null); setMoeilijkheidFilter('alles'); }}
-              style={{
-                flex: 1, padding: '8px 12px', borderRadius: 9,
-                fontSize: 14, fontWeight: 600,
-                background: typeFilter === t ? 'var(--cobalt)' : 'transparent',
-                color: typeFilter === t ? '#ffffff' : 'var(--text-secondary)',
-                boxShadow: typeFilter === t ? '0 2px 8px rgba(22,45,110,0.25)' : 'none',
-                transition: 'all 0.15s', textTransform: 'capitalize',
-              }}
-            >
-              {t === 'hoofdgerecht' ? 'Hoofdgerechten' : 'Overig'}
-            </button>
-          ))}
-        </div>
+          {/* Filters over de onderkant van de illustratie */}
+          <div style={{
+            position: 'absolute',
+            bottom: 12,
+            left: isTablet ? 32 : 12,
+            right: isTablet ? 32 : 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+          }}>
+            {/* Toggle Hoofdgerechten / Overig */}
+            <div style={{
+              display: 'flex',
+              background: 'rgba(250,247,240,0.82)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              borderRadius: 12, padding: 4,
+            }}>
+              {(['hoofdgerecht', 'overig'] as ReceptType[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => { setTypeFilter(t); setGeselecteerdeKeuken(null); setMoeilijkheidFilter('alles'); }}
+                  style={{
+                    flex: 1, padding: '8px 12px', borderRadius: 9,
+                    fontSize: 14, fontWeight: 600,
+                    background: typeFilter === t ? 'var(--cobalt)' : 'transparent',
+                    color: typeFilter === t ? '#ffffff' : 'var(--text-secondary)',
+                    boxShadow: typeFilter === t ? '0 2px 8px rgba(22,45,110,0.25)' : 'none',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {t === 'hoofdgerecht' ? 'Hoofdgerechten' : 'Overig'}
+                </button>
+              ))}
+            </div>
 
-        {/* Doordeweeks / Weekend / Alles chips */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          {([
-            { key: 'alles' as const, label: 'Alles', count: telPerMoeilijkheid.alles, activeBg: 'var(--ink)', activeTekst: '#FFFDF7', inactiveBg: 'rgba(26,26,46,0.07)', inactiveTekst: 'var(--text-secondary)' },
-            { key: 'doordeweeks' as const, label: 'Doordeweeks', count: telPerMoeilijkheid.doordeweeks, activeBg: 'var(--olive)', activeTekst: '#ffffff', inactiveBg: 'rgba(74,124,89,0.10)', inactiveTekst: 'var(--olive)' },
-            { key: 'weekend' as const, label: 'Weekend', count: telPerMoeilijkheid.weekend, activeBg: 'var(--crimson)', activeTekst: '#ffffff', inactiveBg: 'rgba(139,37,41,0.10)', inactiveTekst: 'var(--crimson)' },
-          ]).map(({ key, label, count, activeBg, activeTekst, inactiveBg, inactiveTekst }) => {
-            const isActief = moeilijkheidFilter === key;
-            return (
-              <button key={key} onClick={() => setMoeilijkheidFilter(key)} style={{
-                flex: 1, padding: '9px 6px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-                background: isActief ? activeBg : inactiveBg,
-                color: isActief ? activeTekst : inactiveTekst,
-                transition: 'all 0.15s', lineHeight: 1.2,
-              }}>
-                <div>{label}</div>
-                <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, marginTop: 1 }}>{count}</div>
-              </button>
-            );
-          })}
+            {/* Doordeweeks / Weekend / Alles chips */}
+            <div style={{
+              display: 'flex', gap: 6,
+              background: 'rgba(250,247,240,0.78)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              borderRadius: 12, padding: 4,
+            }}>
+              {([
+                { key: 'alles' as const, label: 'Alles', count: telPerMoeilijkheid.alles, activeBg: 'var(--ink)', activeTekst: '#FFFDF7', inactiveTekst: 'var(--text-secondary)' },
+                { key: 'doordeweeks' as const, label: 'Doordeweeks', count: telPerMoeilijkheid.doordeweeks, activeBg: 'var(--olive)', activeTekst: '#ffffff', inactiveTekst: 'var(--olive)' },
+                { key: 'weekend' as const, label: 'Weekend', count: telPerMoeilijkheid.weekend, activeBg: 'var(--crimson)', activeTekst: '#ffffff', inactiveTekst: 'var(--crimson)' },
+              ]).map(({ key, label, count, activeBg, activeTekst, inactiveTekst }) => {
+                const isActief = moeilijkheidFilter === key;
+                return (
+                  <button key={key} onClick={() => setMoeilijkheidFilter(key)} style={{
+                    flex: 1, padding: '8px 6px', borderRadius: 9, fontSize: 13, fontWeight: 600,
+                    background: isActief ? activeBg : 'transparent',
+                    color: isActief ? activeTekst : inactiveTekst,
+                    transition: 'all 0.15s', lineHeight: 1.2,
+                  }}>
+                    <div>{label}</div>
+                    <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, marginTop: 1 }}>{count}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Zoekbalk */}
+      {/* Zoekbalk */}
+      <div style={{ padding: isTablet ? '0 32px 12px' : '0 20px 12px', flexShrink: 0 }}>
         <div className="search-wrapper" style={{ position: 'relative' }}>
           <MagnifyingGlass size={16} weight="regular" style={{
             position: 'absolute', left: 12, top: '50%',
