@@ -161,7 +161,7 @@ export default function ReceptFormScreen({ recept: bestaandRecept, onBack, onSav
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
       {/* Header */}
       <div style={{
         background: 'var(--card)', padding: '16px 20px',

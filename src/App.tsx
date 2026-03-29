@@ -82,14 +82,14 @@ function AppInner() {
   return (
     <>
       <div style={{
-        flex: 1, overflow: 'hidden', display: 'flex',
+        flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex',
         flexDirection: isTablet ? 'row' : 'column',
       }}>
         {isTablet && (
           <TabBar activeTab={activeTab} onTabChange={setActiveTab} vertical />
         )}
         <div style={{
-          flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+          flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column',
         }}>
           {activeTab === 'recepten' && (
             <ReceptenTab

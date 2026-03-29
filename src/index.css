@@ -212,14 +212,14 @@ body::after {
 }
 
 #root {
-  height: 100vh;        /* fallback */
-  height: 100dvh;       /* dynamic viewport height — beter op iOS PWA */
+  min-height: 100vh;    /* fallback */
+  min-height: 100dvh;   /* dynamic viewport height — beter op iOS PWA */
   display: flex;
   flex-direction: column;
   max-width: 480px;
   margin: 0 auto;
   position: relative;
-  background: #FFFDF7;  /* zelfde als html + body + tab bar */
+  background: #FFFDF7;
 }
 
 /* Tablet / iPad */

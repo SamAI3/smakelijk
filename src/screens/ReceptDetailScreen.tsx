@@ -246,7 +246,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
 
   // ── Normaal scherm ──────────────────────────────────────────
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
       {/* Header */}
       <div style={{ background: 'var(--card)', padding: 'calc(env(safe-area-inset-top, 20px) + 8px) 20px 20px', boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden' }}>
         {/* Subtiele illustratie achtergrond */}
