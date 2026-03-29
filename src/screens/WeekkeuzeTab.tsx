@@ -108,7 +108,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
   // ── Boodschappenmodus ─────────────────────────────────────
   if (boodschappenModus) {
     return (
-      <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
+      <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: 'var(--bg)' }}>
         <div style={{
           background: 'var(--cobalt)',
           padding: 'calc(env(safe-area-inset-top, 16px) + 8px) 20px 16px',
@@ -142,6 +142,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
                     background: 'var(--card)', borderRadius: 10, textAlign: 'left',
                     opacity: isAfgevinkt ? 0.45 : 1, transition: 'opacity 0.15s',
                     borderBottom: '1px solid rgba(26,26,46,0.05)',
+                    touchAction: 'pan-y', userSelect: 'none',
                   }}
                 >
                   <div style={{
@@ -191,7 +192,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
   // ── Lege state ────────────────────────────────────────────
   if (weekRecepten.length === 0) {
     return (
-      <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
+      <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: 'var(--bg)' }}>
         <div style={{
           position: 'relative',
           height: isTablet ? 240 : 200,
@@ -249,7 +250,7 @@ export default function WeekkeuzeTab({ onGaNaarRecepten, onStartKoken }: Weekkeu
 
   // ── Gevulde state ─────────────────────────────────────────
   return (
-    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: 'var(--bg)' }}>
 
       {/* Hero illustratie */}
       <div style={{

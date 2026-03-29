@@ -340,7 +340,7 @@ export default function InstellingenTab() {
   };
 
   return (
-    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: 'var(--bg)' }}>
       <div style={{ padding: 'calc(20px + env(safe-area-inset-top, 0px)) 20px 8px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <h1 style={{ fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900, marginBottom: 4, color: 'var(--ink)', lineHeight: 1.0, letterSpacing: '-0.5px', flex: 1 }}>
           Instellingen

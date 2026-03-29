@@ -109,7 +109,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   const filterKey = `${typeFilter}|${moeilijkheidFilter}|${geselecteerdeKeuken ?? ''}|${zoekterm}`;
 
   return (
-    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <div className="page-enter" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', display: 'flex', flexDirection: 'column' }}>
       {/* Immersive hero — illustratie met overlappende filters */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
         {/* Full-bleed illustratie */}

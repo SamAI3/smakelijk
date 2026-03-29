@@ -138,6 +138,18 @@
   to   { transform: rotate(360deg); }
 }
 
+/* Generieke scroll & touch utilities */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.touch-item {
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Featured recipe card */
 .recipe-featured-card {
   animation: cardReveal 0.32s ease-out backwards;

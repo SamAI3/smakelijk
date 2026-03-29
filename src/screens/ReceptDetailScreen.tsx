@@ -153,6 +153,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
               width: isWide ? 300 : '100%',
               flexShrink: 0,
               overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
               padding: isWide ? '24px 24px 48px 32px' : '16px 20px 8px',
               borderRight: isWide ? '1px solid rgba(26,26,46,0.08)' : 'none',
               borderBottom: !isWide ? '1px solid rgba(26,26,46,0.08)' : 'none',
@@ -173,6 +174,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
                         opacity: isAf ? 0.35 : 1,
                         transition: 'opacity 0.18s, background 0.15s',
                         gap: 10,
+                        touchAction: 'pan-y', userSelect: 'none',
                       }}
                     >
                       <span style={{
@@ -200,7 +202,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
 
           {/* ── Bereiding ── */}
           <div style={{
-            flex: 1, overflowY: 'auto',
+            flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
             padding: isWide ? '24px 32px 48px 24px' : '16px 20px 56px',
           }}>
             <KookSectieHeader icon={<ListNumbers size={12} />} titel="Bereiding" />
@@ -216,6 +218,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
                       padding: '12px 10px', borderRadius: 10, width: '100%', textAlign: 'left',
                       background: isActief ? 'rgba(22,45,110,0.06)' : 'transparent',
                       transition: 'background 0.15s',
+                      touchAction: 'pan-y', userSelect: 'none',
                     }}
                   >
                     <div style={{
@@ -246,7 +249,7 @@ export default function ReceptDetailScreen({ recept, onBack, onEdit, kookModusIn
 
   // ── Normaal scherm ──────────────────────────────────────────
   return (
-    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--bg)' }}>
+    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: 'var(--bg)' }}>
       {/* Header */}
       <div style={{ background: 'var(--card)', padding: 'calc(env(safe-area-inset-top, 20px) + 8px) 20px 20px', boxShadow: 'var(--shadow)', position: 'relative', overflow: 'hidden' }}>
         {/* Subtiele illustratie achtergrond */}
