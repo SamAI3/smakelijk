@@ -111,7 +111,7 @@ export default function ReceptenTab({ onOpenRecept, onAddRecept }: ReceptenTabPr
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Immersive hero — illustratie met overlappende filters */}
-      <div style={{ position: 'relative', marginBottom: 16, flexShrink: 0 }}>
+      <div style={{ position: 'relative', flexShrink: 0 }}>
         {/* Full-bleed illustratie */}
         <div style={{
           position: 'relative',

@@ -166,59 +166,80 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
 
   return (
     <div className="page-enter" style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
-      <div style={{ padding: 'calc(20px + env(safe-area-inset-top, 0px)) 20px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <h1 style={{
-          fontFamily: 'var(--font-title)', fontSize: 44, fontWeight: 900,
-          flex: 1, lineHeight: 1.0, color: 'var(--ink)', letterSpacing: '-0.5px',
-        }}>
-          Weekkeuze
-        </h1>
-        {weekRecepten.length > 0 && (
-          <button
-            onClick={() => setConfirmClear(true)}
-            style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}
-          >
-            <Trash size={15} /> Wis alles
-          </button>
-        )}
-      </div>
 
-      <div style={{ padding: '8px 20px 120px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {weekRecepten.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
-            <div className="float-illustration" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <DinerIllustration
-                section="candle"
-                style={{
-                  width: 280, height: 180,
-                  borderRadius: 20,
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-              Nog geen recepten gepland.
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
-              Voeg recepten toe via de Recepten-tab.
-            </p>
-            {onGaNaarRecepten && (
-              <button
-                onClick={onGaNaarRecepten}
-                style={{
-                  padding: '11px 24px', borderRadius: 12,
-                  background: 'var(--cobalt)', color: '#fff',
-                  fontSize: 14, fontWeight: 600,
-                  boxShadow: '0 3px 12px rgba(22,45,110,0.25)',
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                }}
-              >
-                <CookingPot size={16} weight="fill" />
-                Ga naar recepten
-              </button>
-            )}
+      {weekRecepten.length === 0 ? (
+        <>
+          {/* Immersive hero — zelfde stijl als ReceptenTab */}
+          <div style={{
+            position: 'relative',
+            height: 260,
+            overflow: 'hidden',
+            borderRadius: '0 0 20px 20px',
+            flexShrink: 0,
+          }}>
+            <DinerIllustration
+              section="full"
+              style={{ width: '100%', height: '100%', objectPosition: 'center 70%' }}
+              loading="eager"
+            />
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to bottom, rgba(15,10,5,0.28) 0%, transparent 22%, rgba(245,240,232,0.50) 68%, rgba(245,240,232,0.92) 100%)',
+              pointerEvents: 'none',
+            }} />
           </div>
-        )}
+
+          {/* Frosted card — overlapt de onderkant van de hero met -60px */}
+          <div style={{ padding: '0 20px', marginTop: -60, position: 'relative', zIndex: 1 }}>
+            <div style={{
+              background: 'rgba(250,247,240,0.85)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              borderRadius: 16,
+              padding: 24,
+              textAlign: 'center',
+              boxShadow: '0 4px 24px rgba(26,26,46,0.10)',
+            }}>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                Nog geen recepten gepland.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
+                Voeg recepten toe via de Recepten-tab.
+              </p>
+              {onGaNaarRecepten && (
+                <button
+                  onClick={onGaNaarRecepten}
+                  style={{
+                    padding: '11px 24px', borderRadius: 12,
+                    background: 'var(--cobalt)', color: '#fff',
+                    fontSize: 14, fontWeight: 600,
+                    boxShadow: '0 3px 12px rgba(22,45,110,0.25)',
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                  }}
+                >
+                  <CookingPot size={16} weight="fill" />
+                  Ga naar recepten
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Minimale header: alleen "Wis alles", met safe-area */}
+          <div style={{
+            padding: 'calc(16px + env(safe-area-inset-top, 0px)) 20px 8px',
+            display: 'flex', justifyContent: 'flex-end',
+          }}>
+            <button
+              onClick={() => setConfirmClear(true)}
+              style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}
+            >
+              <Trash size={15} /> Wis alles
+            </button>
+          </div>
+
+          <div style={{ padding: '0 20px 120px', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
         {weekRecepten.map(({ weekItem, recept }) => (
           <div
@@ -285,22 +306,22 @@ export default function WeekkeuzeTab({ onGaNaarRecepten }: WeekkeuzeTabProps) {
           </div>
         ))}
 
-        {weekRecepten.length > 0 && (
-          <button
-            onClick={() => setBoodschappenModus(true)}
-            style={{
-              marginTop: 8, padding: '13px', borderRadius: 12,
-              background: 'var(--cobalt)', color: '#fff',
-              fontSize: 15, fontWeight: 700,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              boxShadow: '0 4px 14px rgba(22,45,110,0.28)',
-            }}
-          >
-            <ShoppingCart size={18} />
-            Naar boodschappenlijst
-          </button>
-        )}
-      </div>
+        <button
+          onClick={() => setBoodschappenModus(true)}
+          style={{
+            marginTop: 8, padding: '13px', borderRadius: 12,
+            background: 'var(--cobalt)', color: '#fff',
+            fontSize: 15, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            boxShadow: '0 4px 14px rgba(22,45,110,0.28)',
+          }}
+        >
+          <ShoppingCart size={18} />
+          Naar boodschappenlijst
+        </button>
+          </div>
+        </>
+      )}
 
       {/* Bevestiging wis alles */}
       {confirmClear && (
