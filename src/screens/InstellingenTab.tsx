@@ -3,13 +3,23 @@ import { SignOut, Copy, Check, UsersThree, Upload, FileText, X, UserCircle, Chec
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useRecepten } from '../context/ReceptenContext';
-import { Recept, ReceptType, Moeilijkheid } from '../types';
+import { Recept, ReceptType, Moeilijkheid, Eenheid } from '../types';
 import { bepaalMoeilijkheid } from '../services/ai';
 import { CookbookIllustration } from '../components/illustrations/Decorations';
 import DinerIllustration from '../components/DinerIllustration';
 
 // ── JSON import types ────────────────────────────────────────────
 type ImportRecept = Omit<Recept, 'id' | 'aangemaakt' | 'toegevoegdDoor' | 'favoriet' | 'laatstGemaakt'>;
+
+const IMPORT_EENHEDEN: (Eenheid | string)[] = [
+  'gram', 'kg', 'ml', 'liter', 'stuks', 'el', 'tl', 'snuf',
+  'pak', 'blik', 'teen', 'takje', 'blad',
+];
+
+const IMPORT_KEUKENS = [
+  'Italiaans', 'Mexicaans', 'Aziatisch', 'Nederlands', 'Frans',
+  'Grieks', 'Indiaas', 'Thais', 'Japans', 'Arabisch', 'Anders',
+];
 
 const GELDIGE_EENHEDEN = new Set([
   'gram', 'kg', 'ml', 'liter', 'stuks', 'el', 'tl',
@@ -259,6 +269,7 @@ export default function InstellingenTab() {
   type ImportStatus = 'idle' | 'preview' | 'importing' | 'done';
   const [importStatus, setImportStatus] = useState<ImportStatus>('idle');
   const [importRecepten, setImportRecepten] = useState<ImportRecept[]>([]);
+  const [editImportRecepten, setEditImportRecepten] = useState<ImportRecept[]>([]);
   const [geselecteerd, setGeselecteerd] = useState<Set<number>>(new Set());
   const [importError, setImportError] = useState('');
   const [importSucces, setImportSucces] = useState(0);
@@ -281,6 +292,7 @@ export default function InstellingenTab() {
         return;
       }
       setImportRecepten(result);
+      setEditImportRecepten(result.map((r) => ({ ...r, ingredienten: r.ingredienten.map((ing) => ({ ...ing })) })));
       setGeselecteerd(new Set(result.map((_, i) => i)));
       setImportStatus('preview');
     } catch (err) {
@@ -317,7 +329,7 @@ export default function InstellingenTab() {
 
   const handleImport = async () => {
     setImportStatus('importing');
-    const teImporteren = importRecepten.filter((_, i) => geselecteerd.has(i));
+    const teImporteren = editImportRecepten.filter((_, i) => geselecteerd.has(i));
     let succesCount = 0;
     for (const recept of teImporteren) {
       try {
@@ -334,10 +346,22 @@ export default function InstellingenTab() {
   const resetImport = () => {
     setImportStatus('idle');
     setImportRecepten([]);
+    setEditImportRecepten([]);
     setGeselecteerd(new Set());
     setImportError('');
     setImportSucces(0);
     setJsonTekst('');
+  };
+
+  const updateEditRecept = (i: number, updates: Partial<ImportRecept>) => {
+    setEditImportRecepten((prev) => prev.map((r, j) => j === i ? { ...r, ...updates } : r));
+  };
+
+  const updateEditIngredient = (receptIdx: number, ingIdx: number, updates: Partial<{ naam: string; hoeveelheid: number; eenheid: string }>) => {
+    setEditImportRecepten((prev) => prev.map((r, i) => {
+      if (i !== receptIdx) return r;
+      return { ...r, ingredienten: r.ingredienten.map((ing, j) => j === ingIdx ? { ...ing, ...updates } : ing) };
+    }));
   };
 
   const exporteerRecepten = async () => {
@@ -599,41 +623,131 @@ export default function InstellingenTab() {
                 </button>
               </div>
 
-              {/* Lijst */}
-              <div style={{ background: 'var(--card)', borderRadius: 14, boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
-                {importRecepten.map((r, i) => (
-                  <button
-                    key={i}
-                    onClick={() => toggleSelectie(i)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '11px 14px', width: '100%', textAlign: 'left',
-                      borderBottom: i < importRecepten.length - 1 ? '1px solid rgba(26,26,46,0.06)' : 'none',
-                      background: geselecteerd.has(i) ? 'rgba(22,45,110,0.05)' : 'transparent',
-                      transition: 'background 0.1s',
-                    }}
-                  >
-                    <div style={{
-                      width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                      border: geselecteerd.has(i) ? 'none' : '2px solid rgba(26,26,46,0.18)',
-                      background: geselecteerd.has(i) ? 'var(--cobalt)' : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.1s',
+              {/* Bewerkbare recept cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {editImportRecepten.map((r, i) => {
+                  const fieldStyle: React.CSSProperties = {
+                    padding: '7px 10px', borderRadius: 8,
+                    border: '1.5px solid var(--border-color)',
+                    background: 'var(--bg)', fontSize: 13,
+                    color: 'var(--text)', outline: 'none', width: '100%',
+                    fontFamily: 'var(--font-body)',
+                  };
+                  return (
+                    <div key={i} style={{
+                      background: 'var(--card)', borderRadius: 14,
+                      boxShadow: 'var(--shadow)',
+                      border: geselecteerd.has(i) ? '2px solid var(--cobalt)' : '2px solid transparent',
+                      transition: 'border-color 0.15s',
+                      overflow: 'hidden',
                     }}>
-                      {geselecteerd.has(i) && <Check size={13} color="#fff" weight="bold" />}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
-                        {r.titel || '(naamloos)'}
+                      {/* Card header: checkbox + titel */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderBottom: '1px solid rgba(26,26,46,0.06)' }}>
+                        <button
+                          onClick={() => toggleSelectie(i)}
+                          style={{
+                            width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                            border: geselecteerd.has(i) ? 'none' : '2px solid rgba(26,26,46,0.18)',
+                            background: geselecteerd.has(i) ? 'var(--cobalt)' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'all 0.1s',
+                          }}
+                        >
+                          {geselecteerd.has(i) && <Check size={13} color="#fff" weight="bold" />}
+                        </button>
+                        <input
+                          value={r.titel}
+                          onChange={(e) => updateEditRecept(i, { titel: e.target.value })}
+                          placeholder="Titel"
+                          style={{ ...fieldStyle, fontWeight: 700, fontSize: 14, background: 'transparent', border: 'none', borderBottom: '1.5px solid var(--border-light)', borderRadius: 0, flex: 1 }}
+                        />
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                        {r.ingredienten.length} ingrediënt{r.ingredienten.length !== 1 ? 'en' : ''}
-                        {r.keuken ? ` · ${r.keuken}` : ''}
-                        {r.bereidingstijd > 0 ? ` · ${r.bereidingstijd} min` : ''}
+
+                      {/* Metadata row */}
+                      <div style={{ padding: '10px 14px', display: 'flex', flexWrap: 'wrap', gap: 8, borderBottom: '1px solid rgba(26,26,46,0.06)' }}>
+                        {/* Keuken */}
+                        <select value={r.keuken} onChange={(e) => updateEditRecept(i, { keuken: e.target.value })} style={{ ...fieldStyle, width: 'auto', flex: '1 1 120px' }}>
+                          <option value="">Keuken…</option>
+                          {IMPORT_KEUKENS.map((k) => <option key={k} value={k}>{k}</option>)}
+                        </select>
+                        {/* Type */}
+                        <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1.5px solid var(--border-color)' }}>
+                          {(['hoofdgerecht', 'overig'] as ReceptType[]).map((t) => (
+                            <button key={t} onClick={() => updateEditRecept(i, { type: t })} style={{
+                              padding: '7px 10px', fontSize: 12, fontWeight: 600,
+                              background: r.type === t ? 'var(--cobalt)' : 'var(--bg)',
+                              color: r.type === t ? '#fff' : 'var(--text-secondary)',
+                              transition: 'background 0.12s',
+                            }}>
+                              {t === 'hoofdgerecht' ? 'Hoofdgerecht' : 'Overig'}
+                            </button>
+                          ))}
+                        </div>
+                        {/* Bereidingstijd */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
+                          <input type="number" min={0} value={r.bereidingstijd} onChange={(e) => updateEditRecept(i, { bereidingstijd: Number(e.target.value) })} style={{ ...fieldStyle, width: 60, textAlign: 'center' }} />
+                          <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>min</span>
+                        </div>
+                        {/* Porties */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
+                          <input type="number" min={1} value={r.porties} onChange={(e) => updateEditRecept(i, { porties: Number(e.target.value) })} style={{ ...fieldStyle, width: 48, textAlign: 'center' }} />
+                          <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>port.</span>
+                        </div>
                       </div>
+
+                      {/* Ingrediënten */}
+                      {r.ingredienten.length > 0 && (
+                        <div style={{ padding: '10px 14px', borderBottom: '1px solid rgba(26,26,46,0.06)' }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 6 }}>
+                            Ingrediënten
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            {r.ingredienten.map((ing, j) => (
+                              <div key={j} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                                <input
+                                  value={ing.naam}
+                                  onChange={(e) => updateEditIngredient(i, j, { naam: e.target.value })}
+                                  placeholder="Naam"
+                                  style={{ ...fieldStyle, flex: 2 }}
+                                />
+                                <input
+                                  type="number" min={0} value={ing.hoeveelheid || ''}
+                                  onChange={(e) => updateEditIngredient(i, j, { hoeveelheid: Number(e.target.value) })}
+                                  placeholder="0"
+                                  style={{ ...fieldStyle, width: 54, textAlign: 'center', flex: '0 0 54px' }}
+                                />
+                                <select
+                                  value={ing.eenheid}
+                                  onChange={(e) => updateEditIngredient(i, j, { eenheid: e.target.value })}
+                                  style={{ ...fieldStyle, flex: '0 0 auto', width: 'auto' }}
+                                >
+                                  {IMPORT_EENHEDEN.map((e) => <option key={e} value={e}>{e}</option>)}
+                                </select>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bereiding (alleen lezen) */}
+                      {r.bereiding.length > 0 && (
+                        <div style={{ padding: '10px 14px' }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 6 }}>
+                            Bereiding
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            {r.bereiding.map((stap, j) => (
+                              <div key={j} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                <span style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 5, background: 'rgba(22,45,110,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'var(--cobalt)', marginTop: 2 }}>{j + 1}</span>
+                                <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>{stap}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </button>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Importeer knop */}
